@@ -143,7 +143,6 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   gap: 10px;
 }
 
-/* En pantallas móviles, apilamos los textos y ponemos primero al líder */
 @media (max-width: 900px) {
   .main-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: repeat(3, 1fr); }
@@ -151,7 +150,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   .mobile-tabs { display: block; }
   
   .footer-bar {
-    flex-direction: column-reverse; /* Invierte el orden: el segundo elemento pasa arriba y el primero abajo */
+    flex-direction: column;
     text-align: center;
     padding: 12px;
   }
