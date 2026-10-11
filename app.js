@@ -234,9 +234,10 @@ function mostrarConsolidado() {
 
   listaConsolidada.forEach((item, index) => { item.pos = index + 1; });
 
+  // Promedio exacto para la tabla de supervisión
   let listaSupervisionConsolidada = Object.keys(supervisionMap).map(nombre => {
-    let promedioSup = Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count);
-    return { encuestador: nombre, super: promedioSup };
+    let prom = supervisionMap[nombre].suma / supervisionMap[nombre].count;
+    return { encuestador: nombre, super: Math.round(prom) };
   });
 
   const consolidadoObj = {
