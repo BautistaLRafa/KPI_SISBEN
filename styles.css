@@ -140,14 +140,23 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   align-items: center;
   font-weight: 600;
   border: 1px solid #334155;
+  gap: 10px;
 }
 
+/* En pantallas móviles, apilamos los textos y ponemos primero al líder */
 @media (max-width: 900px) {
   .main-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: repeat(3, 1fr); }
   .tabs-bar { display: none; }
   .mobile-tabs { display: block; }
+  
+  .footer-bar {
+    flex-direction: column-reverse; /* Invierte el orden: el segundo elemento pasa arriba y el primero abajo */
+    text-align: center;
+    padding: 12px;
+  }
 }
+
 @media (max-width: 600px) {
   .cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
