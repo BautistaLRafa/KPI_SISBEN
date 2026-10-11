@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisbén Santa Marta - Dashboard KPI</title>
+  <style>
+    :root {
+      --primary: #123d49;
+      --secondary: #e6f2f0;
+      --accent: #2e8b80;
+      --text-dark: #1e293b;
+      --bg-light: #f4f8f7;
+      
+      --color-alto: #dbeafe;
+      --text-alto: #1e40af;
+      --color-bueno: #dcfce7;
+      --text-bueno: #166534;
+      --color-regular: #fef9c3;
+      --text-regular: #854d0e;
+      --color-bajo: #ffe4e6;
+      --text-bajo: #9f1239;
+      --color-malo: #e2e8f0;
+      --text-malo: #475569;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-light); color: var(--text-dark); padding: 12px; font-size: 13px; }
+
+    .dashboard-card {
+      max-width: 1300px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 16px;
+      border: 1px solid #d1d5db;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand-title { display: flex; align-items: center; gap: 10px; }
+    .brand-title h1 { color: var(--primary); font-size: 1.5rem; font-weight: 800; }
+    .brand-title .sub { color: #888; font-size: 0.85rem; font-weight: 600; }
+    .slogan { font-family: Georgia, serif; font-style: italic; color: #3b7a70; font-size: 1.1rem; font-weight: bold; }
+
+    /* Pestañas de Navegación */
+    .tabs-bar { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tab-btn {
+      background: #e2e8f0;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #ffffff; }
+
+    .mobile-tabs { display: none; margin-bottom: 12px; width: 100%; }
+    .mobile-tabs select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 2px solid var(--accent);
+      font-weight: bold;
+      background: #fff;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--secondary);
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    /* Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 3.2fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .table-box {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 11.5px; }
+    th { background: var(--primary); color: #ffffff; padding: 7px 4px; font-size: 11px; font-weight: 700; }
+    td { padding: 6px 4px; border-bottom: 1px solid #edf2f7; }
+
+    /* Semáforo Filas */
+    tr.row-alto { background-color: var(--color-alto); color: var(--text-alto); }
+    tr.row-bueno { background-color: var(--color-bueno); color: var(--text-bueno); }
+    tr.row-regular { background-color: var(--color-regular); color: var(--text-regular); }
+    tr.row-bajo { background-color: var(--color-bajo); color: var(--text-bajo); }
+    tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
+
+    .badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 10px;
+    }
+
+    .sup-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #1e293b;
+      min-width: 45px;
+    }
+    .sup-azul { background-color: #93c5fd; }
+    .sup-verde { background-color: #86efac; }
+    .sup-amarillo { background-color: #fde047; }
+    .sup-rosado { background-color: #fca5a5; }
+    .sup-gris { background-color: #cbd5e1; }
+
+    /* Tarjetas de Totales Inferiores */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .metric-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .metric-title { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+    .metric-value { font-size: 20px; font-weight: 900; color: var(--primary); margin: 2px 0; }
+    .metric-sub { font-size: 10px; font-weight: 700; color: #475569; }
+
+    .footer-bar {
+      background: var(--primary);
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: repeat(3, 1fr); }
+      .tabs-bar { display: none; }
+      .mobile-tabs { display: block; }
+    }
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-card">
+    <!-- Encabezado -->
+    <div class="header-bar">
+      <div class="brand-title">
+        <h1>Sisbén</h1>
+        <span class="sub">Santa Marta</span>
+      </div>
+      <div class="slogan">Transformando Santa Marta</div>
+    </div>
+
+    <!-- Pestañas PC -->
+    <div class="tabs-bar" id="tabs-bar"></div>
+
+    <!-- Menú Desplegable Móvil -->
+    <div class="mobile-tabs">
+      <select id="mobile-tabs-select" onchange="cambiarCiclo(this.value)"></select>
+    </div>
+
+    <!-- Barra de Título del Ciclo -->
+    <div class="info-bar">
+      <span id="ciclo-titulo">CARGANDO...</span>
+      <span id="ciclo-fechas">--</span>
+    </div>
+
+    <!-- Tablas Principales -->
+    <div class="main-grid">
+      <!-- Tabla de Rendimiento -->
+      <div class="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th>POS</th>
+              <th style="text-align: left;">ENCUESTADOR</th>
+              <th>CAN</th><th>PEN</th><th>REA</th><th>REC</th><th>VER</th><th>ASIG</th>
+              <th>TG (20%)</th><th>EF (30%)</th><th>PD (20%)</th><th>EG (30%)</th>
+              <th>SUM (100%)</th><th>SUB_T</th><th>TOTAL</th><th>FINAL</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-rendimiento"></tbody>
+        </table>
+      </div>
+
+      <!-- Tabla de Supervisión -->
+      <div class="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">SUPERVISIÓN</th>
+            </tr>
+            <tr>
+              <th style="text-align: left;">ENCUESTADOR</th>
+              <th>SUPER</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-supervision"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tarjetas de Totales -->
+    <div class="cards-grid">
+      <div class="metric-card">
+        <div class="metric-title">Realizadas</div>
+        <div class="metric-value" id="tot-realizadas">0</div>
+        <div class="metric-sub" id="sub-realizadas">-</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Pendientes</div>
+        <div class="metric-value" id="tot-pendientes">0</div>
+        <div class="metric-sub" id="sub-pendientes">-</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Canceladas</div>
+        <div class="metric-value" id="tot-canceladas">0</div>
+        <div class="metric-sub" id="sub-canceladas">-</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Rechazadas</div>
+        <div class="metric-value" id="tot-rechazadas">0</div>
+        <div class="metric-sub" id="sub-rechazadas">-</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Verificaciones</div>
+        <div class="metric-value" id="tot-verificaciones">0</div>
+        <div class="metric-sub" id="sub-verificaciones">-</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Asignadas</div>
+        <div class="metric-value" id="tot-asignadas">0</div>
+        <div class="metric-sub" id="sub-asignadas">-</div>
+      </div>
+    </div>
+
+    <!-- Pie Dinámico de Liderazgo -->
+    <div class="footer-bar">
+      <span>¡Gracias por su compromiso y esfuerzo!</span>
+      <span id="footer-liderazgo">--</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
