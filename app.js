@@ -48,7 +48,6 @@ async function cargarIndiceCiclos() {
     optCons.innerText = 'CONSOLIDADO GENERAL';
     mobileSelect.appendChild(optCons);
     
-    // Cargar por defecto el ciclo más reciente
     const ultimoCicloId = index.ciclos_disponibles[index.ciclos_disponibles.length - 1].id;
     cambiarCiclo(ultimoCicloId);
     
@@ -95,7 +94,7 @@ function renderizarDashboard(data) {
   document.getElementById('sub-verificaciones').innerText = data.totales.verificacionesPct + " de las asignadas";
   
   document.getElementById('tot-asignadas').innerText = data.totales.asignadas;
-  document.getElementById('sub-asignadas').innerText = data.totales.asignadasVar + " vs. ciclo anterior";
+  document.getElementById('sub-asignadas').innerText = data.totales.asignadasVar;
 
   // Tabla Rendimiento
   const tbodyRend = document.getElementById('tbody-rendimiento');
@@ -106,7 +105,6 @@ function renderizarDashboard(data) {
   let liderPuntos = '';
 
   data.rendimiento.forEach(row => {
-    // Cálculo dinámico para el mensaje de liderazgo
     if (row.pos === 1) {
       liderNombre = row.encuestador;
       liderPuntos = row.total;
@@ -127,7 +125,6 @@ function renderizarDashboard(data) {
     tbodyRend.appendChild(tr);
   });
 
-  // Mensaje de Liderazgo Automático y Dinámico
   document.getElementById('footer-liderazgo').innerText = 
     `${liderNombre} lidera con ${liderPuntos} puntos. ${destacadosCount} encuestadores en nivel BUENO o ALTO.`;
 
@@ -167,30 +164,40 @@ function mostrarConsolidado() {
     totalRechazadas += ciclo.totales.rechazadas;
     totalVerificaciones += ciclo.totales.verificaciones;
 
+    // Consolidar Rendimiento por encuestador sumando sus métricas en todos los ciclos
     ciclo.rendimiento.forEach(r => {
       if (!rendimientoMap[r.encuestador]) {
-        rendimientoMap[r.encuestador] = { encuestador: r.encuestador, can:0, pen:0, rea:0, rec:0, ver:0, asig:0, totalSum: 0 };
+        rendimientoMap[r.encuestador] = { 
+          encuestador: r.encuestador, 
+          can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0, 
+          totalSum: 0 
+        };
       }
-      rendimientoMap[r.encuestador].can += r.can;
-      rendimientoMap[r.encuestador].pen += r.pen;
-      rendimientoMap[r.encuestador].rea += r.rea;
-      rendimientoMap[r.encuestador].rec += r.rec;
-      rendimientoMap[r.encuestador].ver += r.ver;
-      rendimientoMap[r.encuestador].asig += r.asig;
-      rendimientoMap[r.encuestador].totalSum += parseFloat(r.total.replace(',', '.'));
+      rendimientoMap[r.encuestador].can += Number(r.can) || 0;
+      rendimientoMap[r.encuestador].pen += Number(r.pen) || 0;
+      rendimientoMap[r.encuestador].rea += Number(r.rea) || 0;
+      rendimientoMap[r.encuestador].rec += Number(r.rec) || 0;
+      rendimientoMap[r.encuestador].ver += Number(r.ver) || 0;
+      rendimientoMap[r.encuestador].asig += Number(r.asig) || 0;
+      
+      let valTotal = parseFloat(String(r.total).replace(',', '.')) || 0;
+      rendimientoMap[r.encuestador].totalSum += valTotal;
     });
 
+    // Consolidar Supervisión sumando y promediando correctamente por encuestador
     ciclo.supervision.forEach(s => {
-      if (!supervisionMap[s.encuestador]) supervisionMap[s.encuestador] = { suma: 0, count: 0 };
-      supervisionMap[s.encuestador].suma += s.super;
+      if (!supervisionMap[s.encuestador]) {
+        supervisionMap[s.encuestador] = { suma: 0, count: 0 };
+      }
+      supervisionMap[s.encuestador].suma += Number(s.super) || 0;
       supervisionMap[s.encuestador].count += 1;
     });
   });
 
-  // Ordenar lista del consolidado por promedio de puntaje descendente
+  // Generar lista ordenada de rendimiento consolidado
   let listaConsolidada = Object.values(rendimientoMap).map(item => {
     let promTotal = (item.totalSum / cantidadCiclos).toFixed(2).replace('.', ',');
-    let pNum = parseFloat(promTotal.replace(',', '.'));
+    let pNum = item.totalSum / cantidadCiclos;
     
     let finalCat = "ALTO";
     if (pNum < 45) finalCat = "MALO";
@@ -200,30 +207,47 @@ function mostrarConsolidado() {
 
     return {
       encuestador: item.encuestador,
-      can: item.can, pen: item.pen, rea: item.rea, rec: item.rec, ver: item.ver, asig: item.asig,
-      tg: "-", ef: "-", pd: "-", eg: "-", sum: "-", sub_t: "-", total: promTotal, final: finalCat, pNum: pNum
+      can: item.can,
+      pen: item.pen,
+      rea: item.rea,
+      rec: item.rec,
+      ver: item.ver,
+      asig: item.asig,
+      tg: "-", ef: "-", pd: "-", eg: "-", sum: "-", sub_t: "-", 
+      total: promTotal, 
+      final: finalCat, 
+      pNum: pNum
     };
   }).sort((a, b) => b.pNum - a.pNum);
 
-  // Asignar nuevas posiciones basadas en el acumulado
+  // Asignar posiciones basadas en el acumulado
   listaConsolidada.forEach((item, index) => { item.pos = index + 1; });
+
+  // Generar lista de supervisión consolidada (promedio histórico por encuestador)
+  let listaSupervisionConsolidada = Object.keys(supervisionMap).map(nombre => {
+    let promedioSup = Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count);
+    return { encuestador: nombre, super: promedioSup };
+  }).sort((a, b) => b.super - a.super); // Ordenados de mayor a menor supervisión
 
   const consolidadoObj = {
     titulo: "CONSOLIDADO GENERAL",
-    fechas: "ACUMULADO HISTÓRICO",
+    fechas: `ACUMULADO HISTÓRICO (${cantidadCiclos} CICLOS)`,
     totales: {
-      realizadas: totalRealizadas, realizadasPct: ((totalRealizadas/totalAsignadas)*100).toFixed(1) + '%',
-      pendientes: totalPendientes, pendientesPct: ((totalPendientes/totalAsignadas)*100).toFixed(1) + '%',
-      canceladas: totalCanceladas, canceladasPct: ((totalCanceladas/totalAsignadas)*100).toFixed(1) + '%',
-      rechazadas: totalRechazadas, rechazadasPct: ((totalRechazadas/totalAsignadas)*100).toFixed(2) + '%',
-      verificaciones: totalVerificaciones, verificacionesPct: ((totalVerificaciones/totalAsignadas)*100).toFixed(1) + '%',
-      asignadas: totalAsignadas, asignadasVar: "Acumulado"
+      realizadas: totalRealizadas, 
+      realizadasPct: totalAsignadas ? ((totalRealizadas/totalAsignadas)*100).toFixed(1) + '%' : '0%',
+      pendientes: totalPendientes, 
+      pendientesPct: totalAsignadas ? ((totalPendientes/totalAsignadas)*100).toFixed(1) + '%' : '0%',
+      canceladas: totalCanceladas, 
+      canceladasPct: totalAsignadas ? ((totalCanceladas/totalAsignadas)*100).toFixed(1) + '%' : '0%',
+      rechazadas: totalRechazadas, 
+      rechazadasPct: totalAsignadas ? ((totalRechazadas/totalAsignadas)*100).toFixed(2) + '%' : '0%',
+      verificaciones: totalVerificaciones, 
+      verificacionesPct: totalAsignadas ? ((totalVerificaciones/totalAsignadas)*100).toFixed(1) + '%' : '0%',
+      asignadas: totalAsignadas, 
+      asignadasVar: "Acumulado total"
     },
     rendimiento: listaConsolidada,
-    supervision: Object.keys(supervisionMap).map(nombre => {
-      let promedioSup = Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count);
-      return { encuestador: nombre, super: promedioSup };
-    })
+    supervision: listaSupervisionConsolidada
   };
 
   renderizarDashboard(consolidadoObj);
