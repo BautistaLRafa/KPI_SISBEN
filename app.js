@@ -1,27 +1,6 @@
 let ciclosData = {};
 let cicloActualId = '';
 
-// Mapeo para normalizar nombres si difieren en los JSON
-const NORMALIZAR_NOMBRE = {
-  "ALEX JIMENEZ": "ALEX J",
-  "DIEGO PADILLA": "DIEGO",
-  "ISAC ALVAREZ": "ISAC",
-  "JOSE ROMERO": "JOSE ROMERO",
-  "JOSÉ ROMERO": "JOSE ROMERO",
-  "KATHERINE PERDOMO": "KATHERINE P",
-  "LILIANA PIÑA": "LILIANA PIÑA",
-  "LISBETH PATERNINA": "LISBETH P",
-  "MARTIN BELTRAN": "MARTIN",
-  "SAYDIS ROJANO": "SAYDIS R",
-  "VERONICA CASTRO": "VERONICA"
-};
-
-function normalizar(nombre) {
-  if (!nombre) return "";
-  let clean = nombre.trim().toUpperCase();
-  return NORMALIZAR_NOMBRE[clean] || clean;
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarIndiceCiclos();
 });
@@ -190,7 +169,7 @@ function mostrarConsolidado() {
     totalVerificaciones += ciclo.totales.verificaciones;
 
     ciclo.rendimiento.forEach(r => {
-      let nom = normalizar(r.encuestador);
+      let nom = r.encuestador;
       if (!rendimientoMap[nom]) {
         rendimientoMap[nom] = { 
           encuestador: nom, 
@@ -215,7 +194,7 @@ function mostrarConsolidado() {
     });
 
     ciclo.supervision.forEach(s => {
-      let nom = normalizar(s.encuestador);
+      let nom = s.encuestador;
       if (!supervisionMap[nom]) {
         supervisionMap[nom] = { suma: 0, count: 0 };
       }
