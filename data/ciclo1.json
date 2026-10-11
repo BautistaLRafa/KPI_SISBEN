@@ -29,15 +29,15 @@
     { "pos": 10, "encuestador": "ISAC", "can": 7, "pen": 30, "rea": 12, "rec": 0, "ver": 1, "asig": 51, "tg": "7,84", "ef": "27,69", "pd": "4,36", "eg": "7,06", "sum": "46,95", "sub_t": "56,11", "total": "48,07", "final": "MALO" }
   ],
   "supervision": [
-    { "encuestador": "ALEX JIMENEZ", "super": 99 },
-    { "encuestador": "DIEGO PADILLA", "super": 59 },
-    { "encuestador": "ISAC ALVAREZ", "super": 36 },
+    { "encuestador": "ALEX J", "super": 99 },
+    { "encuestador": "DIEGO", "super": 59 },
+    { "encuestador": "ISAC", "super": 36 },
     { "encuestador": "JOSE ROMERO", "super": 55 },
-    { "encuestador": "KATHERINE PERDOMO", "super": 100 },
+    { "encuestador": "KATHERINE P", "super": 100 },
     { "encuestador": "LILIANA PIÑA", "super": 85 },
-    { "encuestador": "LISBETH PATERNINA", "super": 85 },
-    { "encuestador": "MARTIN BELTRAN", "super": 48 },
-    { "encuestador": "SAYDIS ROJANO", "super": 95 },
-    { "encuestador": "VERONICA CASTRO", "super": 98 }
+    { "encuestador": "LISBETH P", "super": 85 },
+    { "encuestador": "MARTIN", "super": 48 },
+    { "encuestador": "SAYDIS R", "super": 95 },
+    { "encuestador": "VERONICA", "super": 98 }
   ]
 }
