@@ -1,0 +1,6 @@
+{
+  "ciclos_disponibles": [
+    { "id": "ciclo1", "titulo": "PRIMER CICLO", "archivo": "data/ciclo1.json" },
+    { "id": "ciclo2", "titulo": "SEGUNDO CICLO", "archivo": "data/ciclo2.json" }
+  ]
+}
