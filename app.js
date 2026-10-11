@@ -18,7 +18,11 @@ async function cargarIndiceCiclos() {
     
     for (let cicloInfo of index.ciclos_disponibles) {
       const res = await fetch(cicloInfo.archivo);
-      ciclosData[cicloInfo.id] = await res.json();
+      let dataCiclo = await res.json();
+      
+      // Calcular métricas dinámicamente usando la lógica exacta de la fórmula
+      dataCiclo.rendimiento = calcularMetricasCiclo(dataCiclo.rendimiento, dataCiclo.supervision);
+      ciclosData[cicloInfo.id] = dataCiclo;
       
       const btn = document.createElement('button');
       btn.className = 'tab-btn';
@@ -29,7 +33,7 @@ async function cargarIndiceCiclos() {
       
       const opt = document.createElement('option');
       opt.value = cicloInfo.id;
-      opt.innerText = `${cicloInfo.titulo} (${ciclosData[cicloInfo.id].fechas})`;
+      opt.innerText = `${cicloInfo.titulo} (${dataCiclo.fechas})`;
       mobileSelect.appendChild(opt);
     }
     
@@ -70,6 +74,92 @@ function actualizarActivosUI(id) {
   document.getElementById('mobile-tabs-select').value = id;
 }
 
+function parseNum(val) {
+  if (typeof val === 'number') return val;
+  if (!val || val === '-') return 0;
+  return parseFloat(String(val).replace(',', '.')) || 0;
+}
+
+function fmt(val) {
+  return val.toFixed(2).replace('.', ',');
+}
+
+// Lógica exacta de cálculo basada en la fórmula LET de Google Sheets / Excel
+function calcularMetricasCiclo(rendimientoList, supervisionList) {
+  let supMap = {};
+  if (supervisionList) {
+    supervisionList.forEach(s => { supMap[s.encuestador] = parseNum(s.super); });
+  }
+
+  let maxAsig = Math.max(...rendimientoList.map(r => parseNum(r.asig)), 1);
+
+  let calculados = rendimientoList.map(row => {
+    let can = parseNum(row.can);
+    let pen = parseNum(row.pen);
+    let rea = parseNum(row.rea);
+    let rec = parseNum(row.rec);
+    let ver = parseNum(row.ver);
+    let asig = parseNum(row.asig);
+
+    let asigDiv = asig === 0 ? 1 : asig;
+    let tg = ((can + rea + rec + ver) / asigDiv) * 20;
+
+    let efDenom = (rea + rec + ver) === 0 ? 1 : (rea + rec + ver);
+    let ef = (rea / efDenom) * 30;
+
+    let maxAsigDiv = maxAsig === 0 ? 1 : maxAsig;
+    let pd = (rea / maxAsigDiv) * 20;
+
+    let eg = (rea / asigDiv) * 30;
+
+    let suma = tg + ef + pd + eg;
+
+    // sub_t (equivalente a 'total' en la fórmula)
+    let sub_t = (suma * 0.8) + ((asig / maxAsigDiv) * 20);
+
+    let superVal = supMap[row.encuestador] !== undefined ? supMap[row.encuestador] : 0;
+
+    // total (equivalente a 'total2' en la fórmula)
+    let totalScore = (sub_t * 0.6) + (superVal * 0.4);
+
+    let finalCat = "MALO";
+    if (totalScore >= 90) finalCat = "EXCELENTE";
+    else if (totalScore >= 80) finalCat = "ALTO";
+    else if (totalScore >= 70) finalCat = "BUENO";
+    else if (totalScore >= 60) finalCat = "REGULAR";
+    else if (totalScore >= 50) finalCat = "BAJO";
+
+    return {
+      encuestador: row.encuestador,
+      can: can,
+      pen: pen,
+      rea: rea,
+      rec: rec,
+      ver: ver,
+      asig: asig,
+      tg: tg,
+      ef: ef,
+      pd: pd,
+      eg: eg,
+      sum: suma,
+      sub_t: sub_t,
+      total: totalScore,
+      final: finalCat,
+      pNum: totalScore
+    };
+  });
+
+  // Ordenar de mayor a menor según el puntaje total (SORT descendente)
+  calculados.sort((a, b) => b.pNum - a.pNum);
+
+  // Asignar posiciones (SEQUENCE)
+  calculados.forEach((item, index) => {
+    item.pos = index + 1;
+  });
+
+  return calculados;
+}
+
 function renderizarDashboard(data) {
   document.getElementById('ciclo-titulo').innerText = data.titulo;
   document.getElementById('ciclo-fechas').innerText = data.fechas;
@@ -102,9 +192,9 @@ function renderizarDashboard(data) {
   data.rendimiento.forEach(row => {
     if (row.pos === 1) {
       liderNombre = row.encuestador;
-      liderPuntos = row.total;
+      liderPuntos = fmt(row.total);
     }
-    if (row.final === "BUENO" || row.final === "ALTO") {
+    if (row.final === "BUENO" || row.final === "ALTO" || row.final === "EXCELENTE") {
       destacadosCount++;
     }
 
@@ -114,14 +204,14 @@ function renderizarDashboard(data) {
       <td>${row.pos}</td>
       <td style="text-align: left; font-weight: 600;">${row.encuestador}</td>
       <td>${row.can}</td><td>${row.pen}</td><td>${row.rea}</td><td>${row.rec}</td><td>${row.ver}</td><td>${row.asig}</td>
-      <td>${row.tg}</td><td>${row.ef}</td><td>${row.pd}</td><td>${row.eg}</td><td>${row.sum}</td><td>${row.sub_t}</td><td><b>${row.total}</b></td>
+      <td>${fmt(row.tg)}</td><td>${fmt(row.ef)}</td><td>${fmt(row.pd)}</td><td>${fmt(row.eg)}</td><td>${fmt(row.sum)}</td><td>${fmt(row.sub_t)}</td><td><b>${fmt(row.total)}</b></td>
       <td><span class="badge badge-${row.final.toLowerCase()}">${row.final}</span></td>
     `;
     tbodyRend.appendChild(tr);
   });
 
   document.getElementById('footer-liderazgo').innerText = 
-    `${liderNombre} lidera con ${liderPuntos} puntos. ${destacadosCount} encuestadores en nivel BUENO o ALTO.`;
+    `${liderNombre} lidera con ${liderPuntos} puntos. ${destacadosCount} encuestadores en nivel BUENO, ALTO o EXCELENTE.`;
 
   const tbodySup = document.getElementById('tbody-supervision');
   tbodySup.innerHTML = '';
@@ -142,16 +232,6 @@ function renderizarDashboard(data) {
   });
 }
 
-function parseNum(val) {
-  if (typeof val === 'number') return val;
-  if (!val || val === '-') return 0;
-  return parseFloat(String(val).replace(',', '.')) || 0;
-}
-
-function fmt(val) {
-  return val.toFixed(2).replace('.', ',');
-}
-
 function mostrarConsolidado() {
   actualizarActivosUI('consolidado');
   
@@ -168,14 +248,11 @@ function mostrarConsolidado() {
     totalRechazadas += ciclo.totales.rechazadas;
     totalVerificaciones += ciclo.totales.verificaciones;
 
+    // Consolidar conteos base por encuestador sumando todos los ciclos
     ciclo.rendimiento.forEach(r => {
       let nom = r.encuestador;
       if (!rendimientoMap[nom]) {
-        rendimientoMap[nom] = { 
-          encuestador: nom, 
-          can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0, 
-          tgSum: 0, efSum: 0, pdSum: 0, egSum: 0, sumSum: 0, subTSum: 0, totalSum: 0 
-        };
+        rendimientoMap[nom] = { encuestador: nom, can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0 };
       }
       rendimientoMap[nom].can += parseNum(r.can);
       rendimientoMap[nom].pen += parseNum(r.pen);
@@ -183,16 +260,9 @@ function mostrarConsolidado() {
       rendimientoMap[nom].rec += parseNum(r.rec);
       rendimientoMap[nom].ver += parseNum(r.ver);
       rendimientoMap[nom].asig += parseNum(r.asig);
-      
-      rendimientoMap[nom].tgSum += parseNum(r.tg);
-      rendimientoMap[nom].efSum += parseNum(r.ef);
-      rendimientoMap[nom].pdSum += parseNum(r.pd);
-      rendimientoMap[nom].egSum += parseNum(r.eg);
-      rendimientoMap[nom].sumSum += parseNum(r.sum);
-      rendimientoMap[nom].subTSum += parseNum(r.sub_t);
-      rendimientoMap[nom].totalSum += parseNum(r.total);
     });
 
+    // Consolidar supervisión acumulada
     ciclo.supervision.forEach(s => {
       let nom = s.encuestador;
       if (!supervisionMap[nom]) {
@@ -203,47 +273,20 @@ function mostrarConsolidado() {
     });
   });
 
-  let listaConsolidada = Object.values(rendimientoMap).map(item => {
-    let promTotal = item.totalSum / cantidadCiclos;
-    
-    let finalCat = "ALTO";
-    if (promTotal < 45) finalCat = "MALO";
-    else if (promTotal < 60) finalCat = "BAJO";
-    else if (promTotal < 70) finalCat = "REGULAR";
-    else if (promTotal < 80) finalCat = "BUENO";
+  let listaRendimientoAcumulada = Object.values(rendimientoMap);
 
-    return {
-      encuestador: item.encuestador,
-      can: item.can,
-      pen: item.pen,
-      rea: item.rea,
-      rec: item.rec,
-      ver: item.ver,
-      asig: item.asig,
-      tg: fmt(item.tgSum / cantidadCiclos),
-      ef: fmt(item.efSum / cantidadCiclos),
-      pd: fmt(item.pdSum / cantidadCiclos),
-      eg: fmt(item.egSum / cantidadCiclos),
-      sum: fmt(item.sumSum / cantidadCiclos),
-      sub_t: fmt(item.subTSum / cantidadCiclos),
-      total: fmt(promTotal),
-      final: finalCat,
-      pNum: promTotal
-    };
-  }).sort((a, b) => b.pNum - a.pNum);
-
-  listaConsolidada.forEach((item, index) => { item.pos = index + 1; });
-
-  // Cálculo exacto del promedio de supervisión por encuestador ordenado de mayor a menor
   let listaSupervisionConsolidada = Object.keys(supervisionMap).map(nombre => {
     let dataSup = supervisionMap[nombre];
     let promedioSup = dataSup.suma / dataSup.count;
     return { encuestador: nombre, super: Math.round(promedioSup) };
-  }).sort((a, b) => b.super - a.super);
+  });
+
+  // Recalcular métricas consolidadas pasando los totales acumulados y promedios de supervisión
+  let rendimientoConsolidadoCalculado = calcularMetricasCiclo(listaRendimientoAcumulada, listaSupervisionConsolidada);
 
   const consolidadoObj = {
     titulo: "CONSOLIDADO GENERAL",
-    fechas: "ACUMULADO HISTÓRICO",
+    fechas: `ACUMULADO HISTÓRICO (${cantidadCiclos} CICLOS)`,
     totales: {
       realizadas: totalRealizadas, 
       realizadasPct: totalAsignadas ? ((totalRealizadas/totalAsignadas)*100).toFixed(1) + '%' : '0%',
@@ -256,10 +299,10 @@ function mostrarConsolidado() {
       verificaciones: totalVerificaciones, 
       verificacionesPct: totalAsignadas ? ((totalVerificaciones/totalAsignadas)*100).toFixed(1) + '%' : '0%',
       asignadas: totalAsignadas, 
-      asignadasVar: "Acumulado vs. ciclo anterior"
+      asignadasVar: "Acumulado total"
     },
-    rendimiento: listaConsolidada,
-    supervision: listaSupervisionConsolidada
+    rendimiento: rendimientoConsolidadoCalculado,
+    supervision: listaSupervisionConsolidada.sort((a, b) => b.super - a.super)
   };
 
   renderizarDashboard(consolidadoObj);
