@@ -11,17 +11,17 @@
     { "encuestador": "JOSE ROMERO", "can": 12, "pen": 18, "rea": 12, "rec": 0, "ver": 1, "asig": 43 },
     { "encuestador": "ISAC", "can": 9, "pen": 14, "rea": 15, "rec": 1, "ver": 1, "asig": 41 },
     { "encuestador": "DIEGO", "can": 12, "pen": 14, "rea": 10, "rec": 0, "ver": 2, "asig": 39 },
-    { "encuestador": "LISBETH P", "can": 1, "pen": 30, "rea": 6, "rec": 0, "ver": 0, "asig": 37 },
-    { "encuestador": "LILIANA PIÑA", "can": 0, "pen": 29, "rea": 3, "rec": 0, "ver": 1, "asig": 35 }
+    { "encuestador": "LISBETH P", "can": 6, "pen": 17, "rea": 14, "rec": 0, "ver": 0, "asig": 37 },
+    { "encuestador": "LILIANA PIÑA", "can": 0, "pen": 17, "rea": 15, "rec": 0, "ver": 1, "asig": 35 }
   ],
   "supervision": [
     { "encuestador": "ALEX J", "super": 102 },
-    { "encuestador": "DIEGO", "super": 59 },
+    { "encuestador": "DIEGO", "super": 61 },
     { "encuestador": "ISAC", "super": 69 },
     { "encuestador": "JOSE ROMERO", "super": 66 },
     { "encuestador": "KATHERINE P", "super": 100 },
-    { "encuestador": "LILIANA PIÑA", "super": 50 },
-    { "encuestador": "LISBETH P", "super": 33 },
+    { "encuestador": "LILIANA PIÑA", "super": 71 },
+    { "encuestador": "LISBETH P", "super": 89 },
     { "encuestador": "MARTIN", "super": 94 },
     { "encuestador": "SAYDIS R", "super": 77 },
     { "encuestador": "VERONICA", "super": 93 }
