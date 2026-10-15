@@ -11,7 +11,7 @@
     { "encuestador": "MARTIN", "can": 16, "pen": 7, "rea": 20, "rec": 0, "ver": 5, "asig": 48 },
     { "encuestador": "LISBETH P", "can": 6, "pen": 17, "rea": 20, "rec": 0, "ver": 0, "asig": 43 },
     { "encuestador": "DIEGO", "can": 11, "pen": 21, "rea": 16, "rec": 0, "ver": 0, "asig": 49 },
-    { "encuestador": "ISAC", "can": 11, "pen": 22, "rea": 16, "rec": 0, "ver": 1, "asig": 50 },
+    { "encuestador": "ISAC", "can": 10, "pen": 22, "rea": 17, "rec": 0, "ver": 1, "asig": 50 },
     { "encuestador": "LILIANA PIÑA", "can": 2, "pen": 24, "rea": 14, "rec": 0, "ver": 1, "asig": 42 }
   ],
   "supervision": [
