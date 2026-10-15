@@ -15,15 +15,15 @@
     { "encuestador": "LILIANA PIÑA", "can": 2, "pen": 24, "rea": 14, "rec": 0, "ver": 1, "asig": 42 }
   ],
   "supervision": [
-    { "encuestador": "ALEX J", "super": 0 },
+    { "encuestador": "ALEX J", "super": 101 },
     { "encuestador": "DIEGO", "super": 0 },
-    { "encuestador": "ISAC", "super": 0 },
+    { "encuestador": "ISAC", "super": 73 },
     { "encuestador": "JOSE ROMERO", "super": 0 },
-    { "encuestador": "KATHERINE P", "super": 0 },
-    { "encuestador": "LILIANA PIÑA", "super": 0 },
-    { "encuestador": "LISBETH P", "super": 0 },
+    { "encuestador": "KATHERINE P", "super": 102 },
+    { "encuestador": "LILIANA PIÑA", "super": 78 },
+    { "encuestador": "LISBETH P", "super": 91 },
     { "encuestador": "MARTIN", "super": 0 },
-    { "encuestador": "SAYDIS R", "super": 0 },
-    { "encuestador": "VERONICA", "super": 0 }
+    { "encuestador": "SAYDIS R", "super": 94 },
+    { "encuestador": "VERONICA", "super": 99 }
   ]
 }
