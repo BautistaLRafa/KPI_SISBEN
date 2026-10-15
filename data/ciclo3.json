@@ -16,14 +16,14 @@
   ],
   "supervision": [
     { "encuestador": "ALEX J", "super": 101 },
-    { "encuestador": "DIEGO", "super": 0 },
+    { "encuestador": "DIEGO", "super": 89 },
     { "encuestador": "ISAC", "super": 73 },
-    { "encuestador": "JOSE ROMERO", "super": 0 },
+    { "encuestador": "JOSE ROMERO", "super": 91 },
     { "encuestador": "KATHERINE P", "super": 102 },
     { "encuestador": "LILIANA PIÑA", "super": 78 },
     { "encuestador": "LISBETH P", "super": 91 },
-    { "encuestador": "MARTIN", "super": 0 },
+    { "encuestador": "MARTIN", "super": 95 },
     { "encuestador": "SAYDIS R", "super": 94 },
-    { "encuestador": "VERONICA", "super": 99 }
+    { "encuestador": "VERONICA", "super": 101 }
   ]
 }
