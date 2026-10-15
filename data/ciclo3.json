@@ -3,16 +3,16 @@
   "titulo": "TERCER CICLO",
   "fechas": "06 OCT – 10 OCT",
   "rendimiento": [
-    { "encuestador": "KATHERINE P", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "ALEX J", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "SAYDIS R", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "VERONICA", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "MARTIN", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "JOSE ROMERO", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "ISAC", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "DIEGO", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "LISBETH P", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
-    { "encuestador": "LILIANA PIÑA", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 }
+    { "encuestador": "SAYDIS R", "can": 19, "pen": 1, "rea": 24, "rec": 0, "ver": 2, "asig": 46 },
+    { "encuestador": "KATHERINE P", "can": 11, "pen": 6, "rea": 26, "rec": 1, "ver": 2, "asig": 46 },
+    { "encuestador": "ALEX J", "can": 13, "pen": 9, "rea": 25, "rec": 0, "ver": 2, "asig": 49 },
+    { "encuestador": "JOSE ROMERO", "can": 21, "pen": 9, "rea": 20, "rec": 1, "ver": 0, "asig": 51 },
+    { "encuestador": "VERONICA", "can": 14, "pen": 10, "rea": 21, "rec": 1, "ver": 0, "asig": 46 },
+    { "encuestador": "MARTIN", "can": 16, "pen": 7, "rea": 20, "rec": 0, "ver": 5, "asig": 48 },
+    { "encuestador": "LISBETH P", "can": 6, "pen": 17, "rea": 20, "rec": 0, "ver": 0, "asig": 43 },
+    { "encuestador": "DIEGO", "can": 11, "pen": 21, "rea": 16, "rec": 0, "ver": 0, "asig": 49 },
+    { "encuestador": "ISAC", "can": 11, "pen": 22, "rea": 16, "rec": 0, "ver": 1, "asig": 50 },
+    { "encuestador": "LILIANA PIÑA", "can": 2, "pen": 24, "rea": 14, "rec": 0, "ver": 1, "asig": 42 }
   ],
   "supervision": [
     { "encuestador": "ALEX J", "super": 0 },
