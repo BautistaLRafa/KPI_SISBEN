@@ -2,6 +2,7 @@
   "ciclos_disponibles": [
     { "id": "ciclo1", "titulo": "PRIMER CICLO", "archivo": "data/ciclo1.json" },
     { "id": "ciclo2", "titulo": "SEGUNDO CICLO", "archivo": "data/ciclo2.json" },
-    { "id": "ciclo3", "titulo": "TERCER CICLO", "archivo": "data/ciclo3.json" }
+    { "id": "ciclo3", "titulo": "TERCER CICLO", "archivo": "data/ciclo3.json" },
+    { "id": "ciclo4", "titulo": "CUARTO CICLO", "archivo": "data/ciclo4.json" }
   ]
 }
