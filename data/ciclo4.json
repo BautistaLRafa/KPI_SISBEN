@@ -1,0 +1,29 @@
+{
+  "id": "ciclo4",
+  "titulo": "CUARTO CICLO",
+  "fechas": "13 OCT – 15 OCT",
+  "rendimiento": [
+    { "encuestador": "SAYDIS R", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "KATHERINE P", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "ALEX J", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "JOSE ROMERO", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "VERONICA", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "MARTIN", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "LISBETH P", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "DIEGO", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "ISAC", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 },
+    { "encuestador": "LILIANA PIÑA", "can": 0, "pen": 0, "rea": 0, "rec": 0, "ver": 0, "asig": 0 }
+  ],
+  "supervision": [
+    { "encuestador": "ALEX J", "super": 0 },
+    { "encuestador": "DIEGO", "super": 0 },
+    { "encuestador": "ISAC", "super": 0 },
+    { "encuestador": "JOSE ROMERO", "super": 0 },
+    { "encuestador": "KATHERINE P", "super": 0 },
+    { "encuestador": "LILIANA PIÑA", "super": 0 },
+    { "encuestador": "LISBETH P", "super": 0 },
+    { "encuestador": "MARTIN", "super": 0 },
+    { "encuestador": "SAYDIS R", "super": 0 },
+    { "encuestador": "VERONICA", "super": 0 }
+  ]
+}
