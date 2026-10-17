@@ -66,14 +66,29 @@ function calcularTotales(rendimiento) {
     r += parseNum(row.rea); p += parseNum(row.pen); c += parseNum(row.can);
     rc += parseNum(row.rec); v += parseNum(row.ver); a += parseNum(row.asig);
   });
-  const div = a === 0 ? 1 : a;
+  
+  const divAsig = a === 0 ? 1 : a;
+  const divReal = r === 0 ? 1 : r; // Divisor específico basado en las realizadas
+
   return {
-    realizadas: r, realizadasPct: ((r/div)*100).toFixed(1).replace('.', ',') + '%',
-    pendientes: p, pendientesPct: ((p/div)*100).toFixed(1).replace('.', ',') + '%',
-    canceladas: c, canceladasPct: ((c/div)*100).toFixed(1).replace('.', ',') + '%',
-    rechazadas: rc, rechazadasPct: ((rc/div)*100).toFixed(2).replace('.', ',') + '%',
-    verificaciones: v, verificacionesPct: ((v/div)*100).toFixed(1).replace('.', ',') + '%',
-    asignadas: a, asignadasVar: "Total asignadas"
+    realizadas: r, 
+    realizadasPct: ((r / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    
+    pendientes: p, 
+    pendientesPct: ((p / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    
+    canceladas: c, 
+    canceladasPct: ((c / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    
+    // Calculadas en base a las REALIZADAS
+    rechazadas: rc, 
+    rechazadasPct: ((rc / divReal) * 100).toFixed(2).replace('.', ',') + '%',
+    
+    verificaciones: v, 
+    verificacionesPct: ((v / divReal) * 100).toFixed(1).replace('.', ',') + '%',
+    
+    asignadas: a, 
+    asignadasVar: "Total asignadas"
   };
 }
 
@@ -166,8 +181,18 @@ function renderizarDashboard(data) {
     const elVal = document.getElementById(`tot-${key}`);
     const elSub = document.getElementById(`sub-${key}`);
     if (elVal) elVal.innerText = val;
-    if (elSub && key !== 'asignadas') elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
-    if (elSub && key === 'asignadas') elSub.innerText = data.totales.asignadasVar;
+    
+    if (elSub) {
+      if (key === 'asignadas') {
+        elSub.innerText = data.totales.asignadasVar;
+      } else if (key === 'rechazadas' || key === 'verificaciones') {
+        // Subtítulo específico para rechazadas y verificaciones basado en realizadas
+        elSub.innerText = data.totales[key + 'Pct'] + " de las realizadas";
+      } else {
+        // Resto de tarjetas basadas en las asignadas
+        elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
+      }
+    }
   });
 
   const tbodyRend = document.getElementById('tbody-rendimiento');
