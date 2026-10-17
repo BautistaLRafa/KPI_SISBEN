@@ -68,7 +68,10 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  const divReal = r === 0 ? 1 : r; // Divisor específico basado en las realizadas
+  
+  // Base precisa para Rechazadas y Verificaciones (Realizadas + Rechazadas + Verificaciones)
+  const baseProcesada = r + rc + v;
+  const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
     realizadas: r, 
@@ -80,12 +83,12 @@ function calcularTotales(rendimiento) {
     canceladas: c, 
     canceladasPct: ((c / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
     
-    // Calculadas en base a las REALIZADAS
+    // Calculadas estrictamente sobre la base procesada (Realizadas + Rechazadas + Verificaciones)
     rechazadas: rc, 
-    rechazadasPct: ((rc / divReal) * 100).toFixed(2).replace('.', ',') + '%',
+    rechazadasPct: ((rc / divProcesada) * 100).toFixed(2).replace('.', ',') + '%',
     
     verificaciones: v, 
-    verificacionesPct: ((v / divReal) * 100).toFixed(1).replace('.', ',') + '%',
+    verificacionesPct: ((v / divProcesada) * 100).toFixed(1).replace('.', ',') + '%',
     
     asignadas: a, 
     asignadasVar: "Total asignadas"
