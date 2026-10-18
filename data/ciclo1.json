@@ -6,13 +6,13 @@
     { "encuestador": "KATHERINE P", "can": 3, "pen": 10, "rea": 35, "rec": 0, "ver": 0, "asig": 51 },
     { "encuestador": "SAYDIS R", "can": 8, "pen": 6, "rea": 33, "rec": 2, "ver": 0, "asig": 52 },
     { "encuestador": "ALEX J", "can": 10, "pen": 14, "rea": 22, "rec": 1, "ver": 1, "asig": 51 },
-    { "encuestador": "LISBETH P", "can": 2, "pen": 16, "rea": 29, "rec": 0, "ver": 2, "asig": 49 },
-    { "encuestador": "VERONICA", "can": 7, "pen": 14, "rea": 20, "rec": 0, "ver": 6, "asig": 49 },
+    { "encuestador": "LISBETH P", "can": 2, "pen": 16, "rea": 30, "rec": 0, "ver": 1, "asig": 49 },
+    { "encuestador": "VERONICA", "can": 7, "pen": 14, "rea": 22, "rec": 0, "ver": 4, "asig": 49 },
     { "encuestador": "LILIANA PIÑA", "can": 3, "pen": 16, "rea": 25, "rec": 2, "ver": 1, "asig": 51 },
-    { "encuestador": "DIEGO", "can": 11, "pen": 17, "rea": 19, "rec": 0, "ver": 1, "asig": 48 },
+    { "encuestador": "DIEGO", "can": 11, "pen": 17, "rea": 20, "rec": 0, "ver": 0, "asig": 48 },
     { "encuestador": "MARTIN", "can": 9, "pen": 15, "rea": 30, "rec": 0, "ver": 1, "asig": 55 },
-    { "encuestador": "JOSE ROMERO", "can": 11, "pen": 11, "rea": 24, "rec": 0, "ver": 3, "asig": 49 },
-    { "encuestador": "ISAC", "can": 7, "pen": 25, "rea": 18, "rec": 0, "ver": 1, "asig": 51 }
+    { "encuestador": "JOSE ROMERO", "can": 11, "pen": 11, "rea": 25, "rec": 0, "ver": 2, "asig": 49 },
+    { "encuestador": "ISAC", "can": 7, "pen": 25, "rea": 19, "rec": 0, "ver": 0, "asig": 51 }
   ],
   "supervision": [
     { "encuestador": "ALEX J", "super": 99 },
