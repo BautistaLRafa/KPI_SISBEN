@@ -19,7 +19,7 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 .text-left { text-align: left !important; }
 .font-weight-600 { font-weight: 600; }
 
-/* BARRA LATERAL (SIDEBAR) - Sin scroll inferior en escritorio */
+/* BARRA LATERAL (SIDEBAR) */
 .sidebar {
   width: 70px;
   background: #111827;
@@ -27,7 +27,7 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
-  overflow: hidden; /* Elimina la barra de scroll inferior por completo */
+  overflow: visible; /* Permite que el menú flotante sobresalga sin recortarse */
   z-index: 100;
 }
 .sidebar:hover { width: 240px; }
@@ -59,7 +59,7 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 .sidebar-menu {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden; /* Previene scroll horizontal */
+  overflow-x: hidden;
   padding: 10px 0;
   display: flex;
   flex-direction: column;
@@ -87,7 +87,7 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 .menu-item .text { opacity: 0; transition: opacity 0.2s; width: 100%; display: flex; align-items: center; }
 .sidebar:hover .menu-item .text { opacity: 1; }
 
-/* SUBMENÚ FLOTANTE DE MESES (ENCIMA, TIPO POPUP) */
+/* SUBMENÚ FLOTANTE DE MESES */
 .menu-dropdown-wrapper {
   position: relative;
   display: flex;
@@ -102,17 +102,16 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
   top: 0;
   background: #111827;
   border: 1px solid #374151;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
   flex-direction: column;
   min-width: 160px;
   border-radius: 6px;
   padding: 6px 0;
-  z-index: 1000;
+  z-index: 9999;
 }
 
-/* En escritorio, cuando el sidebar está expandido, que se despliegue a la derecha flotando */
-.sidebar:hover .menu-dropdown-wrapper .submenu-meses.show-floating {
-  display: flex;
+.submenu-meses.show-floating {
+  display: flex !important;
 }
 
 .submenu-item {
@@ -207,7 +206,7 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 
 .main-grid {
   display: grid;
-  grid-template-columns: 3.2fr 1.2fr; /* Ligeramente más espacio para centrar mejor la supervisión */
+  grid-template-columns: 3.2fr 1.2fr;
   gap: 14px;
   align-items: start;
 }
@@ -219,7 +218,6 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
   overflow-x: auto;
 }
 
-/* Tabla de supervisión centrada y organizada */
 .supervision-box-container {
   max-width: 420px;
   margin: 0 auto;
@@ -277,7 +275,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   gap: 10px;
 }
 
-/* ESTILOS DE LA INFOGRAFÍA DE INFORMACIÓN */
+/* INFOGRAFÍA */
 .info-section { display: none; line-height: 1.6; color: #cbd5e1; }
 .info-infographic-container { display: flex; flex-direction: column; gap: 20px; padding: 5px; }
 .info-intro-card { background: #1f2937; border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 8px; font-size: 13.5px; line-height: 1.6; }
@@ -321,7 +319,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     width: 100%; 
   }
   
-  /* Los 3 botones del menú ocupan todo el ancho, texto adaptado sin scroll horizontal */
+  /* Menú inferior móvil en 3 columnas ocupando todo el ancho */
   .sidebar-menu { 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -353,27 +351,28 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     display: inline-block;
   }
 
-  /* Submenú de meses flotante o desplegable encima en móvil */
+  /* Submenú flotante en móvil: aparece justo encima o cerca del botón */
   .menu-dropdown-wrapper {
-    position: static;
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
   .submenu-meses {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 280px;
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    top: auto;
+    transform: none;
+    width: 100%;
     background: #111827;
     border: 1px solid #374151;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.7);
     z-index: 9999;
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 6px;
+    padding: 6px;
+    margin-bottom: 4px;
   }
 
   .main-content { 
@@ -387,7 +386,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     gap: 10px;
   }
 
-  /* Textos títulos, subtítulos y mensaje final centrados en móvil */
+  /* Textos y títulos centrados en móvil */
   .header-bar {
     flex-direction: column;
     align-items: center;
@@ -444,7 +443,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     gap: 6px;
   }
 
-  /* Mensaje final de mejor encuestador y agradecimientos centrados en móvil */
+  /* Pie de página centrado en móvil */
   .footer-bar {
     flex-direction: column;
     align-items: center;
