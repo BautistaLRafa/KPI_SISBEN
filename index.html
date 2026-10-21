@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sisbén Santa Marta - Dashboard KPI</title>
-  <!-- Enlace a Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,22 +18,23 @@
         <span>Santa Marta</span>
       </div>
     </div>
-    <div class="sidebar-menu" id="sidebar-menu">
-      <!-- Se genera dinámicamente desde app.js -->
-    </div>
+    <div class="sidebar-menu" id="sidebar-menu"></div>
   </nav>
 
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="main-content">
     <div class="dashboard-card">
       <div class="header-bar">
-        <div class="brand-title">
+        <div class="brand-title" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
           <h2 id="view-title">CONSOLIDADO GENERAL</h2>
+          <!-- Selector desplegable de meses -->
+          <select id="select-mes-dropdown" class="mes-select" onchange="seleccionarMesDesdeDropdown(this.value)" style="display: none;">
+          </select>
         </div>
         <div class="slogan">Transformando Santa Marta</div>
       </div>
 
-      <!-- Sub-pestañas de ciclos por mes -->
+      <!-- Sub-pestañas de ciclos por mes (ordenadas con consolidado al final) -->
       <div class="sub-tabs-bar" id="sub-tabs-bar" style="display: none;"></div>
 
       <div class="info-bar">
@@ -83,12 +83,12 @@
         </ul>
         <h3>Rangos de Calificación Final:</h3>
         <ul>
-          <li><span class="badge badge-excelente" style="background:#172554; color:#93c5fd;">EXCELENTE</span> : 90 a 100 puntos.</li>
-          <li><span class="badge badge-alto" style="background:#172554; color:#93c5fd;">ALTO</span> : 80 a 89.9 puntos.</li>
-          <li><span class="badge badge-bueno" style="background:#064e3b; color:#6ee7b7;">BUENO</span> : 70 a 79.9 puntos.</li>
-          <li><span class="badge badge-regular" style="background:#713f12; color:#fde047;">REGULAR</span> : 60 a 69.9 puntos.</li>
-          <li><span class="badge badge-bajo" style="background:#881337; color:#fda4af;">BAJO</span> : 50 a 59.9 puntos.</li>
-          <li><span class="badge badge-malo" style="background:#1e293b; color:#94a3b8;">MALO</span> : Menor a 50 puntos.</li>
+          <li><span class="badge" style="background:#172554; color:#93c5fd;">EXCELENTE</span> : 90 a 100 puntos.</li>
+          <li><span class="badge" style="background:#172554; color:#93c5fd;">ALTO</span> : 80 a 89.9 puntos.</li>
+          <li><span class="badge" style="background:#064e3b; color:#6ee7b7;">BUENO</span> : 70 a 79.9 puntos.</li>
+          <li><span class="badge" style="background:#713f12; color:#fde047;">REGULAR</span> : 60 a 69.9 puntos.</li>
+          <li><span class="badge" style="background:#881337; color:#fda4af;">BAJO</span> : 50 a 59.9 puntos.</li>
+          <li><span class="badge" style="background:#1e293b; color:#94a3b8;">MALO</span> : Menor a 50 puntos.</li>
         </ul>
       </div>
 
