@@ -3,72 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPI Sisbén Santa Marta</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Sisbén Santa Marta - Dashboard KPI</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="dashboard-card">
-    <div class="header-bar">
-      <div class="brand-title">
+
+  <!-- BARRA LATERAL (SIDEBAR) -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">📊</div>
+      <div class="logo-text">
         <h1>Sisbén</h1>
-        <span class="sub">Santa Marta</span>
-      </div>
-      <div class="slogan">Transformando Santa Marta</div>
-    </div>
-
-    <div class="tabs-bar" id="tabs-bar"></div>
-
-    <div class="mobile-tabs">
-      <select id="mobile-tabs-select" onchange="cambiarCiclo(this.value)"></select>
-    </div>
-
-    <div class="info-bar">
-      <span id="ciclo-titulo">CARGANDO...</span>
-      <span id="ciclo-fechas">--</span>
-    </div>
-
-    <div class="main-grid">
-      <div class="table-box">
-        <table>
-          <thead>
-            <tr>
-              <th>POS</th>
-              <th style="text-align: left;">ENCUESTADOR</th>
-              <th>CAN</th><th>PEN</th><th>REA</th><th>REC</th><th>VER</th><th>ASIG</th>
-              <th>TG (20%)</th><th>EF (30%)</th><th>PD (20%)</th><th>EG (30%)</th>
-              <th>SUM (100%)</th><th>SUB_T</th><th>TOTAL</th><th>FINAL</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-rendimiento"></tbody>
-        </table>
-      </div>
-
-      <div class="table-box">
-        <table>
-          <thead>
-            <tr><th colspan="2">SUPERVISIÓN</th></tr>
-            <tr><th style="text-align: left;">ENCUESTADOR</th><th>SUPER</th></tr>
-          </thead>
-          <tbody id="tbody-supervision"></tbody>
-        </table>
+        <span>Santa Marta</span>
       </div>
     </div>
-
-    <div class="cards-grid">
-      <div class="metric-card"><div class="metric-title">Realizadas</div><div class="metric-value" id="tot-realizadas">0</div><div class="metric-sub" id="sub-realizadas">-</div></div>
-      <div class="metric-card"><div class="metric-title">Pendientes</div><div class="metric-value" id="tot-pendientes">0</div><div class="metric-sub" id="sub-pendientes">-</div></div>
-      <div class="metric-card"><div class="metric-title">Canceladas</div><div class="metric-value" id="tot-canceladas">0</div><div class="metric-sub" id="sub-canceladas">-</div></div>
-      <div class="metric-card"><div class="metric-title">Rechazadas</div><div class="metric-value" id="tot-rechazadas">0</div><div class="metric-sub" id="sub-rechazadas">-</div></div>
-      <div class="metric-card"><div class="metric-title">Verificaciones</div><div class="metric-value" id="tot-verificaciones">0</div><div class="metric-sub" id="sub-verificaciones">-</div></div>
-      <div class="metric-card"><div class="metric-title">Asignadas</div><div class="metric-value" id="tot-asignadas">0</div><div class="metric-sub" id="sub-asignadas">-</div></div>
+    <div class="sidebar-menu" id="sidebar-menu">
+      <!-- Se inyecta dinámicamente desde app.js (Consolidado General, Meses, Información) -->
     </div>
+  </nav>
 
-    <!-- Pie Dinámico: Liderazgo arriba y agradecimiento abajo en móvil -->
-    <div class="footer-bar">
-      <span id="footer-liderazgo">--</span>
-      <span>¡Gracias por su compromiso y esfuerzo!</span>
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="main-content">
+    <div class="dashboard-card">
+      <div class="header-bar">
+        <div class="brand-title">
+          <h2 id="view-title">CONSOLIDADO GENERAL</h2>
+        </div>
+        <div class="slogan">Transformando Santa Marta</div>
+      </div>
+
+      <!-- Sub-pestañas de ciclos (Visible solo cuando se selecciona un mes) -->
+      <div class="sub-tabs-bar" id="sub-tabs-bar" style="display: none;"></div>
+
+      <div class="info-bar">
+        <span id="ciclo-titulo">CARGANDO...</span>
+        <span id="ciclo-fechas">--</span>
+      </div>
+
+      <!-- VISTA DE DATOS (TABLAS KPI) -->
+      <div id="view-dashboard" class="main-grid">
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr>
+                <th>POS</th>
+                <th style="text-align: left;">ENCUESTADOR</th>
+                <th>CAN</th><th>PEN</th><th>REA</th><th>REC</th><th>VER</th><th>ASIG</th>
+                <th>TG (20%)</th><th>EF (30%)</th><th>PD (20%)</th><th>EG (30%)</th>
+                <th>SUM (100%)</th><th>SUB_T</th><th>TOTAL</th><th>FINAL</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rendimiento"></tbody>
+          </table>
+        </div>
+
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr><th colspan="2">SUPERVISIÓN</th></tr>
+              <tr><th style="text-align: left;">ENCUESTADOR</th><th>SUPER</th></tr>
+            </thead>
+            <tbody id="tbody-supervision"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA DE INFORMACIÓN / CLASIFICACIÓN (Oculta por defecto) -->
+      <div id="view-info" class="info-section" style="display: none;">
+        <h3>Guía de Clasificación y Ponderación de Desempeño</h3>
+        <p>El sistema evalúa el rendimiento operativo de cada encuestador bajo un modelo ponderado basado en los siguientes componentes:</p>
+        <ul>
+          <li><strong>TG (20%):</strong> Tasa de gestión calculada sobre las encuestas procesadas frente a las asignadas.</li>
+          <li><strong>EF (30%):</strong> Eficiencia basada en las encuestas realizadas frente al total de efectivas intentadas.</li>
+          <li><strong>PD (20%):</strong> Productividad proporcional respecto a la máxima asignación del ciclo.</li>
+          <li><strong>EG (30%):</strong> Efectividad global de encuestas realizadas frente al total asignado.</li>
+          <li><strong>Supervisión (40% del total final):</strong> Nota de campo asignada por el equipo supervisor.</li>
+        </ul>
+        <h3>Rangos de Calificación Final:</h3>
+        <ul>
+          <li><span class="badge badge-excelente" style="background:#172554; color:#93c5fd;">EXCELENTE</span> : 90 a 100 puntos.</li>
+          <li><span class="badge badge-alto" style="background:#172554; color:#93c5fd;">ALTO</span> : 80 a 89.9 puntos.</li>
+          <li><span class="badge badge-bueno" style="background:#064e3b; color:#6ee7b7;">BUENO</span> : 70 a 79.9 puntos.</li>
+          <li><span class="badge badge-regular" style="background:#713f12; color:#fde047;">REGULAR</span> : 60 a 69.9 puntos.</li>
+          <li><span class="badge badge-bajo" style="background:#881337; color:#fda4af;">BAJO</span> : 50 a 59.9 puntos.</li>
+          <li><span class="badge badge-malo" style="background:#1e293b; color:#94a3b8;">MALO</span> : Menor a 50 puntos.</li>
+        </ul>
+      </div>
+
+      <!-- TARJETAS INFERIORES DE TOTALES -->
+      <div class="cards-grid" id="cards-grid">
+        <div class="metric-card"><div class="metric-title">Realizadas</div><div class="metric-value" id="tot-realizadas">0</div><div class="metric-sub" id="sub-realizadas">-</div></div>
+        <div class="metric-card"><div class="metric-title">Pendientes</div><div class="metric-value" id="tot-pendientes">0</div><div class="metric-sub" id="sub-pendientes">-</div></div>
+        <div class="metric-card"><div class="metric-title">Canceladas</div><div class="metric-value" id="tot-canceladas">0</div><div class="metric-sub" id="sub-canceladas">-</div></div>
+        <div class="metric-card"><div class="metric-title">Rechazadas</div><div class="metric-value" id="tot-rechazadas">0</div><div class="metric-sub" id="sub-rechazadas">-</div></div>
+        <div class="metric-card"><div class="metric-title">Verificaciones</div><div class="metric-value" id="tot-verificaciones">0</div><div class="metric-sub" id="sub-verificaciones">-</div></div>
+        <div class="metric-card"><div class="metric-title">Asignadas</div><div class="metric-value" id="tot-asignadas">0</div><div class="metric-sub" id="sub-asignadas">-</div></div>
+      </div>
+
+      <!-- PIE DE PÁGINA -->
+      <div class="footer-bar">
+        <span id="footer-liderazgo">--</span>
+        <span>¡Gracias por su compromiso y esfuerzo!</span>
+      </div>
     </div>
-  </div>
+  </main>
 
   <script src="app.js"></script>
 </body>
