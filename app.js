@@ -3,12 +3,10 @@ let datosMensuales = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 1. Leer el archivo de índice (data/ciclos.json)
     const res = await fetch('data/ciclos.json');
     if (!res.ok) throw new Error("No se pudo cargar data/ciclos.json");
     appData = await res.json();
     
-    // 2. Cargar cada archivo de mes (ej. data/2026-10.json)
     for (let mInfo of appData.meses) {
       const mRes = await fetch(mInfo.archivo);
       if (mRes.ok) {
@@ -22,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     construirSidebar();
+    construirDropdownMeses();
     mostrarConsolidadoGeneral();
     
   } catch (err) {
@@ -35,18 +34,28 @@ function construirSidebar() {
   if (!menu) return;
   menu.innerHTML = '';
 
-  // Icono 1: Inicio
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // Icono 2: Meses
   if (appData.meses) {
     appData.meses.forEach(mes => {
       agregarItemMenu(menu, '<i class="bi bi-stack"></i>', mes.nombre, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
     });
   }
 
-  // Icono 3: Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
+}
+
+function construirDropdownMeses() {
+  const select = document.getElementById('select-mes-dropdown');
+  if (!select) return;
+  select.innerHTML = '';
+
+  appData.meses.forEach(mes => {
+    const opt = document.createElement('option');
+    opt.value = mes.id;
+    opt.innerText = mes.nombre.toUpperCase();
+    select.appendChild(opt);
+  });
 }
 
 function agregarItemMenu(container, iconoHtml, texto, accion, id) {
@@ -67,6 +76,7 @@ function activarMenu(id) {
 function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
   document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
+  document.getElementById('select-mes-dropdown').style.display = 'none';
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
@@ -124,7 +134,12 @@ function seleccionarMes(mesId) {
   const mData = datosMensuales[mesId];
   if (!mData) return;
 
-  document.getElementById('view-title').innerText = `MES: ${mData.nombreMes.toUpperCase()}`;
+  // Actualizar el título y mostrar el desplegable de meses
+  document.getElementById('view-title').innerText = "MES:";
+  const dropdown = document.getElementById('select-mes-dropdown');
+  dropdown.style.display = 'inline-block';
+  dropdown.value = mesId;
+
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
@@ -133,13 +148,7 @@ function seleccionarMes(mesId) {
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
 
-  const btnCons = document.createElement('button');
-  btnCons.className = 'sub-tab-btn';
-  btnCons.id = `sub-btn-consolidado-${mesId}`;
-  btnCons.innerText = 'CONSOLIDADO MES';
-  btnCons.onclick = () => mostrarConsolidadoMes(mesId);
-  subBar.appendChild(btnCons);
-
+  // 1. PRIMERO CREAMOS LOS BOTONES DE LOS CICLOS (Para que el último ciclo aparezca primero)
   mData.ciclos.forEach(cInfo => {
     const btn = document.createElement('button');
     btn.className = 'sub-tab-btn';
@@ -149,7 +158,25 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
-  mostrarConsolidadoMes(mesId);
+  // 2. DESPUÉS CREAMOS EL BOTÓN DE CONSOLIDADO MES (Para que quede al final / a la derecha)
+  const btnCons = document.createElement('button');
+  btnCons.className = 'sub-tab-btn';
+  btnCons.id = `sub-btn-consolidado-${mesId}`;
+  btnCons.innerText = 'CONSOLIDADO MES';
+  btnCons.onclick = () => mostrarConsolidadoMes(mesId);
+  subBar.appendChild(btnCons);
+
+  // 3. POR DEFECTO MOSTRAMOS EL ÚLTIMO CICLO EJECUTADO
+  const ultimoCiclo = mData.ciclos[mData.ciclos.length - 1];
+  mostrarCiclo(mesId, ultimoCiclo.id);
+}
+
+function seleccionarMesId(mesId) {
+  seleccionarMes(mesId);
+}
+
+function seleccionarMesDesdeDropdown(mesId) {
+  seleccionarMes(mesId);
 }
 
 function mostrarConsolidadoMes(mesId) {
@@ -207,6 +234,7 @@ function mostrarCiclo(mesId, cicloId) {
 function mostrarInformacion() {
   activarMenu('menu-info');
   document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
+  document.getElementById('select-mes-dropdown').style.display = 'none';
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('view-dashboard').style.display = 'none';
   document.getElementById('view-info').style.display = 'block';
@@ -227,7 +255,7 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  const baseProcesada = r + rc + v; // Base precisa: Realizadas + Rechazadas + Verificaciones
+  const baseProcesada = r + rc + v;
   const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
@@ -315,6 +343,7 @@ function renderizarDashboard(data) {
 
   if (lider) {
     document.getElementById('footer-liderazgo').innerText = 
+      `${lider.encuestador} lidera con fmt ? ${fmt(lider.total)} puntos : ''`.split('?')[1]?.split(':')[0] || 
       `${lider.encuestador} lidera con ${fmt(lider.total)} puntos. ${destacados} encuestadores en nivel BUENO, ALTO o EXCELENTE.`;
   }
 
