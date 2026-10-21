@@ -1,15 +1,10 @@
 {
-  "meses":[
+  "meses": [
     {
-      "id": "octubre",
-      "nombre": "OCTUBRE",
-      "icono": "📅",
-      "ciclos_disponibles": [
-         { "id": "ciclo1", "titulo": "PRIMER CICLO", "archivo": "data/octubre_ciclo1.json" },
-         { "id": "ciclo2", "titulo": "SEGUNDO CICLO", "archivo": "data/octubre_ciclo2.json" },
-         { "id": "ciclo3", "titulo": "TERCER CICLO", "archivo": "data/octubre_ciclo3.json" },
-         { "id": "ciclo4", "titulo": "CUARTO CICLO", "archivo": "data/octubre_ciclo4.json" }
-      ]
+      "id": "2026-10",
+      "nombre": "Octubre 2026",
+      "icono": "bi bi-stack",
+      "archivo": "data/2026-10.json"
     }
   ]
 }
