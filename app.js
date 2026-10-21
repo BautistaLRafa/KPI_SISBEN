@@ -1,62 +1,224 @@
-let ciclosData = {};
+let appData = { meses: [] };
+let mesActualId = null;
+let cicloActualId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch('data/ciclos.json');
-    const index = await res.json();
+    appData = await res.json();
     
-    const tabsBar = document.getElementById('tabs-bar');
-    const mobileSelect = document.getElementById('mobile-tabs-select');
-    
-    tabsBar.innerHTML = '';
-    mobileSelect.innerHTML = '';
-    
-    for (let cicloInfo of index.ciclos_disponibles) {
-      const cicloRes = await fetch(cicloInfo.archivo);
-      let data = await cicloRes.json();
-      
-      data.rendimiento = calcularMetricas(data.rendimiento, data.supervision);
-      data.totales = calcularTotales(data.rendimiento);
-      ciclosData[cicloInfo.id] = data;
-      
-      crearPestana(cicloInfo.id, cicloInfo.titulo, `${data.fechas}`, tabsBar, mobileSelect);
+    // Cargar todos los datos de los ciclos de cada mes
+    for (let mes of appData.meses) {
+      mes.ciclosData = {};
+      for (let cInfo of mes.ciclos) {
+        const cRes = await fetch(cInfo.archivo);
+        let cData = await cRes.json();
+        cData.rendimiento = calcularMetricas(cData.rendimiento, cData.supervision);
+        cData.totales = calcularTotales(cData.rendimiento);
+        mes.ciclosData[cInfo.id] = cData;
+      }
     }
     
-    crearPestana('consolidado', 'CONSOLIDADO', 'ACUMULADO HISTÓRICO', tabsBar, mobileSelect);
-    cambiarCiclo(index.ciclos_disponibles[index.ciclos_disponibles.length - 1].id);
+    construirSidebar();
+    mostrarConsolidadoGeneral();
     
   } catch (err) {
-    console.error("Error inicializando el dashboard:", err);
+    console.error("Error al iniciar la aplicación:", err);
   }
 });
 
-function crearPestana(id, titulo, subtitulo, pcContainer, mobileContainer) {
+function construirSidebar() {
+  const menu = document.getElementById('sidebar-menu');
+  menu.innerHTML = '';
+
+  // 1. Botón Consolidado General (Página principal)
+  agregarItemMenu(menu, '🏠', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
+
+  // 2. Botones por Mes
+  appData.meses.forEach(mes => {
+    agregarItemMenu(menu, mes.icono || '📅', `Mes: ${mes.nombre}`, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
+  });
+
+  // 3. Botón de Información / Guía de Clasificación
+  agregarItemMenu(menu, 'ℹ️', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
+}
+
+function agregarItemMenu(container, icono, texto, accion, id) {
   const btn = document.createElement('button');
-  btn.className = 'tab-btn';
-  btn.id = `btn-${id}`;
-  btn.innerText = titulo;
-  btn.onclick = () => cambiarCiclo(id);
-  pcContainer.appendChild(btn);
+  btn.className = 'menu-item';
+  btn.id = id;
+  btn.innerHTML = `<span class="icon">${icono}</span><span class="text">${texto}</span>`;
+  btn.onclick = accion;
+  container.appendChild(btn);
+}
+
+function activarMenu(id) {
+  document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+}
+
+// --- VISTA 1: CONSOLIDADO GENERAL DE TODOS LOS MESES ---
+function mostrarConsolidadoGeneral() {
+  activarMenu('menu-consolidado');
+  document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (TODOS LOS MESES)";
+  document.getElementById('sub-tabs-bar').style.display = 'none';
+  document.getElementById('view-dashboard').style.display = 'grid';
+  document.getElementById('view-info').style.display = 'none';
+  document.getElementById('cards-grid').style.display = 'grid';
+
+  let todosLosRendimientos = [];
+  let supervisionMap = {};
+  let totalCiclosCount = 0;
+
+  appData.meses.forEach(mes => {
+    Object.values(mes.ciclosData).forEach(ciclo => {
+      totalCiclosCount++;
+      ciclo.rendimiento.forEach(r => {
+        todosLosRendimientos.push(r);
+      });
+      ciclo.supervision.forEach(s => {
+        if (!supervisionMap[s.encuestador]) supervisionMap[s.encuestador] = { suma: 0, count: 0 };
+        supervisionMap[s.encuestador].suma += parseNum(s.super);
+        supervisionMap[s.encuestador].count += 1;
+      });
+    });
+  });
+
+  // Consolidar por encuestador sumando sus métricas globales
+  let rendMap = {};
+  todosLosRendimientos.forEach(r => {
+    if (!rendMap[r.encuestador]) {
+      rendMap[r.encuestador] = { encuestador: r.encuestador, can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0 };
+    }
+    rendMap[r.encuestador].can += r.can;
+    rendMap[r.encuestador].pen += r.pen;
+    rendMap[r.encuestador].rea += r.rea;
+    rendMap[r.encuestador].rec += r.rec;
+    rendMap[r.encuestador].ver += r.ver;
+    rendMap[r.encuestador].asig += r.asig;
+  });
+
+  const listaSup = Object.keys(supervisionMap).map(nombre => ({
+    encuestador: nombre,
+    super: Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count)
+  })).sort((a, b) => b.super - a.super);
+
+  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
+  const totalesCalc = calcularTotales(rendimientoCalc);
+  totalesCalc.asignadasVar = `Acumulado global (${totalCiclosCount} ciclos)`;
+
+  renderizarDashboard({
+    titulo: "HISTÓRICO GLOBAL",
+    fechas: `ACUMULADO DE ${appData.meses.length} MES(ES) / ${totalCiclosCount} CICLOS`,
+    totales: totalesCalc,
+    rendimiento: rendimientoCalc,
+    supervision: listaSup
+  });
+}
+
+// --- VISTA 2: SELECCIONAR MES Y SUS CICLOS ---
+function seleccionarMes(mesId) {
+  mesActualId = mesId;
+  activarMenu(`menu-mes-${mesId}`);
+  const mesObj = appData.meses.find(m => m.id === mesId);
   
-  const opt = document.createElement('option');
-  opt.value = id;
-  opt.innerText = `${titulo} (${subtitulo})`;
-  mobileContainer.appendChild(opt);
+  document.getElementById('view-title').innerText = `MES: ${mesObj.nombre.toUpperCase()}`;
+  document.getElementById('view-dashboard').style.display = 'grid';
+  document.getElementById('view-info').style.display = 'none';
+  document.getElementById('cards-grid').style.display = 'grid';
+
+  const subBar = document.getElementById('sub-tabs-bar');
+  subBar.style.display = 'flex';
+  subBar.innerHTML = '';
+
+  // Botón de Consolidado del Mes
+  const btnCons = document.createElement('button');
+  btnCons.className = 'sub-tab-btn';
+  btnCons.id = `sub-btn-consolidado-${mesId}`;
+  btnCons.innerText = 'CONSOLIDADO MES';
+  btnCons.onclick = () => mostrarConsolidadoMes(mesId);
+  subBar.appendChild(btnCons);
+
+  // Botones por cada ciclo del mes
+  mesObj.ciclos.forEach(cInfo => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-tab-btn';
+    btn.id = `sub-btn-${cInfo.id}`;
+    btn.innerText = cInfo.titulo;
+    btn.onclick = () => mostrarCiclo(mesId, cInfo.id);
+    subBar.appendChild(btn);
+  });
+
+  // Mostrar por defecto el consolidado del mes o el primer ciclo
+  mostrarConsolidadoMes(mesId);
 }
 
-function cambiarCiclo(id) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById(`btn-${id}`);
+function mostrarConsolidadoMes(mesId) {
+  document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`sub-btn-consolidado-${mesId}`).classList.add('active');
+
+  const mesObj = appData.meses.find(m => m.id === mesId);
+  let rendMap = {}, supMap = {}, numCiclos = mesObj.ciclos.length;
+
+  Object.values(mesObj.ciclosData).forEach(ciclo => {
+    ciclo.rendimiento.forEach(r => {
+      if (!rendMap[r.encuestador]) rendMap[r.encuestador] = { encuestador: r.encuestador, can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0 };
+      rendMap[r.encuestador].can += r.can;
+      rendMap[r.encuestador].pen += r.pen;
+      rendMap[r.encuestador].rea += r.rea;
+      rendMap[r.encuestador].rec += r.rec;
+      rendMap[r.encuestador].ver += r.ver;
+      rendMap[r.encuestador].asig += r.asig;
+    });
+    ciclo.supervision.forEach(s => {
+      if (!supMap[s.encuestador]) supMap[s.encuestador] = { suma: 0, count: 0 };
+      supMap[s.encuestador].suma += parseNum(s.super);
+      supMap[s.encuestador].count += 1;
+    });
+  });
+
+  const listaSup = Object.keys(supMap).map(nombre => ({
+    encuestador: nombre,
+    super: Math.round(supMap[nombre].suma / supMap[nombre].count)
+  })).sort((a, b) => b.super - a.super);
+
+  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
+  const totalesCalc = calcularTotales(rendimientoCalc);
+  totalesCalc.asignadasVar = `Acumulado ${mesObj.nombre} (${numCiclos} ciclos)`;
+
+  renderizarDashboard({
+    titulo: `CONSOLIDADO - ${mesObj.nombre.toUpperCase()}`,
+    fechas: `ACUMULADO MENSUAL (${numCiclos} CICLOS)`,
+    totales: totalesCalc,
+    rendimiento: rendimientoCalc,
+    supervision: listaSup
+  });
+}
+
+function mostrarCiclo(mesId, cicloId) {
+  document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`sub-btn-${cicloId}`);
   if (btn) btn.classList.add('active');
-  document.getElementById('mobile-tabs-select').value = id;
 
-  if (id === 'consolidado') {
-    renderizarDashboard(generarConsolidado());
-  } else {
-    renderizarDashboard(ciclosData[id]);
-  }
+  const mesObj = appData.meses.find(m => m.id === mesId);
+  renderizarDashboard(mesObj.ciclosData[cicloId]);
 }
 
+// --- VISTA 3: INFORMACIÓN / GUÍA ---
+function mostrarInformacion() {
+  activarMenu('menu-info');
+  document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
+  document.getElementById('sub-tabs-bar').style.display = 'none';
+  document.getElementById('view-dashboard').style.display = 'none';
+  document.getElementById('view-info').style.display = 'block';
+  document.getElementById('cards-grid').style.display = 'none';
+  document.getElementById('ciclo-titulo').innerText = "DOCUMENTACIÓN";
+  document.getElementById('ciclo-fechas').innerText = "METODOLOGÍA DE EVALUACIÓN";
+  document.getElementById('footer-liderazgo').innerText = "Sistema de Gestión de Indicadores Sisbén";
+}
+
+// --- FUNCIONES MATEMÁTICAS Y DE RENDERIZADO ---
 const parseNum = val => (typeof val === 'number' ? val : (!val || val === '-' ? 0 : parseFloat(String(val).replace(',', '.')) || 0));
 const fmt = val => val.toFixed(2).replace('.', ',');
 
@@ -68,30 +230,16 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  
-  // Base precisa para Rechazadas y Verificaciones (Realizadas + Rechazadas + Verificaciones)
-  const baseProcesada = r + rc + v;
+  const baseProcesada = r + rc + v; // Base precisa: Realizadas + Rechazadas + Verificaciones
   const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
-    realizadas: r, 
-    realizadasPct: ((r / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
-    
-    pendientes: p, 
-    pendientesPct: ((p / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
-    
-    canceladas: c, 
-    canceladasPct: ((c / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
-    
-    // Calculadas estrictamente sobre la base procesada (Realizadas + Rechazadas + Verificaciones)
-    rechazadas: rc, 
-    rechazadasPct: ((rc / divProcesada) * 100).toFixed(2).replace('.', ',') + '%',
-    
-    verificaciones: v, 
-    verificacionesPct: ((v / divProcesada) * 100).toFixed(1).replace('.', ',') + '%',
-    
-    asignadas: a, 
-    asignadasVar: "Total asignadas"
+    realizadas: r, realizadasPct: ((r / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    pendientes: p, pendientesPct: ((p / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    canceladas: c, canceladasPct: ((c / divAsig) * 100).toFixed(1).replace('.', ',') + '%',
+    rechazadas: rc, rechazadasPct: ((rc / divProcesada) * 100).toFixed(2).replace('.', ',') + '%',
+    verificaciones: v, verificacionesPct: ((v / divProcesada) * 100).toFixed(1).replace('.', ',') + '%',
+    asignadas: a, asignadasVar: "Total asignadas"
   };
 }
 
@@ -134,48 +282,6 @@ function calcularMetricas(rendimiento, supervision) {
   return calculados;
 }
 
-function generarConsolidado() {
-  const rendMap = {}, supMap = {};
-  const numCiclos = Object.keys(ciclosData).length;
-
-  Object.values(ciclosData).forEach(ciclo => {
-    ciclo.rendimiento.forEach(r => {
-      if (!rendMap[r.encuestador]) {
-        rendMap[r.encuestador] = { encuestador: r.encuestador, can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0 };
-      }
-      rendMap[r.encuestador].can += r.can;
-      rendMap[r.encuestador].pen += r.pen;
-      rendMap[r.encuestador].rea += r.rea;
-      rendMap[r.encuestador].rec += r.rec;
-      rendMap[r.encuestador].ver += r.ver;
-      rendMap[r.encuestador].asig += r.asig;
-    });
-
-    ciclo.supervision.forEach(s => {
-      if (!supMap[s.encuestador]) supMap[s.encuestador] = { suma: 0, count: 0 };
-      supMap[s.encuestador].suma += parseNum(s.super);
-      supMap[s.encuestador].count += 1;
-    });
-  });
-
-  const listaSup = Object.keys(supMap).map(nombre => ({
-    encuestador: nombre,
-    super: Math.round(supMap[nombre].suma / supMap[nombre].count)
-  })).sort((a, b) => b.super - a.super);
-
-  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
-  const totalesCalc = calcularTotales(rendimientoCalc);
-  totalesCalc.asignadasVar = `Acumulado (${numCiclos} ciclos)`;
-
-  return {
-    titulo: "CONSOLIDADO GENERAL",
-    fechas: `ACUMULADO HISTÓRICO (${numCiclos} CICLOS)`,
-    totales: totalesCalc,
-    rendimiento: rendimientoCalc,
-    supervision: listaSup
-  };
-}
-
 function renderizarDashboard(data) {
   document.getElementById('ciclo-titulo').innerText = data.titulo;
   document.getElementById('ciclo-fechas').innerText = data.fechas;
@@ -184,17 +290,10 @@ function renderizarDashboard(data) {
     const elVal = document.getElementById(`tot-${key}`);
     const elSub = document.getElementById(`sub-${key}`);
     if (elVal) elVal.innerText = val;
-    
     if (elSub) {
-      if (key === 'asignadas') {
-        elSub.innerText = data.totales.asignadasVar;
-      } else if (key === 'rechazadas' || key === 'verificaciones') {
-        // Subtítulo específico para rechazadas y verificaciones basado en realizadas
-        elSub.innerText = data.totales[key + 'Pct'] + " de las realizadas";
-      } else {
-        // Resto de tarjetas basadas en las asignadas
-        elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
-      }
+      if (key === 'asignadas') elSub.innerText = data.totales.asignadasVar;
+      else if (key === 'rechazadas' || key === 'verificaciones') elSub.innerText = data.totales[key + 'Pct'] + " del procesado";
+      else elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
     }
   });
 
