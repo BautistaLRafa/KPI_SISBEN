@@ -15,6 +15,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
 body { background-color: var(--bg-light); color: var(--text-dark); display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
 
+/* UTILIDADES GENERALES */
+.text-left { text-align: left !important; }
+
 /* BARRA LATERAL (SIDEBAR) */
 .sidebar {
   width: 70px;
@@ -103,10 +106,34 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
   padding-bottom: 12px;
   border-bottom: 2px solid var(--accent);
 }
-.brand-title h2 { color: #38bdf8; font-size: 1.4rem; font-weight: 800; }
+
+.brand-title-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.brand-title-container h2 { color: #38bdf8; font-size: 1.4rem; font-weight: 800; }
 .slogan { font-family: Georgia, serif; font-style: italic; color: #2dd4bf; font-size: 1.1rem; font-weight: bold; }
 
-.sub-tabs-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+/* SELECTOR DESPLEGABLE DE MESES */
+.mes-select {
+  background: #1f2937;
+  color: #38bdf8;
+  border: 1px solid #374151;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+  display: none;
+}
+.mes-select:hover { background: #374151; color: #fff; }
+
+.sub-tabs-bar { display: none; gap: 6px; flex-wrap: wrap; }
 .sub-tab-btn {
   background: #1f2937;
   border: 1px solid #374151;
@@ -194,9 +221,30 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   gap: 10px;
 }
 
-.info-section { line-height: 1.6; color: #cbd5e1; }
-.info-section h3 { color: #38bdf8; margin-top: 15px; margin-bottom: 8px; }
-.info-section ul { padding-left: 20px; margin-bottom: 10px; }
+/* ESTILOS DE LA INFOGRAFÍA DE INFORMACIÓN */
+.info-section { display: none; line-height: 1.6; color: #cbd5e1; }
+.info-infographic-container { display: flex; flex-direction: column; gap: 20px; padding: 5px; }
+.info-intro-card { background: #1f2937; border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 8px; font-size: 13.5px; line-height: 1.6; }
+.info-intro-title { color: #38bdf8; font-size: 15px; display: block; margin-bottom: 6px; font-weight: 700; }
+.info-section-title { color: #38bdf8; margin-top: 5px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.info-section-desc { font-size: 12.5px; color: #94a3b8; }
+.info-grid-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.info-block-card { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.info-block-header { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; color: #38bdf8; border-bottom: 1px solid #374151; padding-bottom: 8px; }
+.info-block-header i { font-size: 18px; color: var(--accent); }
+.info-item-list { display: flex; flex-direction: column; gap: 8px; font-size: 12px; line-height: 1.5; }
+.info-item-row { display: flex; justify-content: space-between; align-items: flex-start; background: rgba(15, 23, 42, 0.4); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.03); }
+.info-item-subtitle { color: #94a3b8; font-size: 11px; }
+.info-badge-pct { background: #0f172a; color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 11px; white-space: nowrap; margin-left: 8px; border: 1px solid #1e3a4c; }
+.info-note-box { background: rgba(38, 166, 154, 0.1); border-left: 3px solid var(--accent); padding: 8px; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+.info-supervision-box { background: rgba(56, 189, 248, 0.05); padding: 12px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.1); line-height: 1.5; }
+.info-supervision-badge-container { text-align: center; padding: 12px; background: #0f172a; border-radius: 6px; border: 1px solid #1e3a4c; }
+.info-supervision-val { font-size: 22px; font-weight: 900; color: #38bdf8; }
+.info-supervision-label { font-size: 10.5px; color: #94a3b8; text-transform: uppercase; margin-top: 2px; }
+.rangos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.rango-card { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 10px; text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.rango-badge { font-size: 10.5px; padding: 3px 6px; }
+.rango-desc { font-size: 12px; color: #f8fafc; font-weight: 600; }
 
 @media (max-width: 900px) {
   body { flex-direction: column; height: auto; overflow: auto; }
@@ -207,22 +255,4 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   .main-content { height: auto; overflow: visible; }
   .main-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* Estilo para el selector desplegable de meses en la cabecera */
-.mes-select {
-  background: #1f2937;
-  color: #38bdf8;
-  border: 1px solid #374151;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s;
-}
-.mes-select:hover {
-  background: #374151;
-  color: #fff;
 }
