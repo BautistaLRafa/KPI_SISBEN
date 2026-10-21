@@ -5,7 +5,7 @@
   "descripcionGuia": "El rendimiento institucional se divide en dos grandes bloques que suman el <strong>100% del total final</strong>:",
   "componentes": [
     "<strong>1. RENDIMIENTO OPERATIVO (60% del total final):</strong><br> Evalúa el volumen y la eficiencia en campo mediante 4 indicadores:<br>• <strong>TG (20%):</strong> Tasa de gestión (encuestas procesadas frente a las asignadas).<br>• <strong>EF (30%):</strong> Efectividad (encuestas aprobadas frente a las realizadas/intentadas).<br>• <strong>PD (20%):</strong> Productividad (solicitudes gestionadas respecto a la máxima asignación del ciclo).<br>• <strong>EG (30%):</strong> Efectividad global de encuestas realizadas frente al total asignado.<br><em>Nota sobre el Subtotal:</em> Combina el 80% del puntaje base de estos indicadores con un 20% que valora al encuestador con mayor volumen de asignaciones, premiando la capacidad de respuesta ante cargas operativas altas.",
-    "<strong>2. SUPERVISIÓN (40% del total final):</strong><br> Corresponde a la nota de campo asignada luego de la supervisión y revisión estricta de reportes, evidencias y formatos de inclusión."
+    "<strong>2. SUPERVISIÓN EN CAMPO (40% del total final):</strong><br> Corresponde al promedio del cumplimiento total obtenido en la auditoría de campo, evaluando:<br>• <strong>Control Documental:</strong> Revisión de planillas y evidencias (PL, EV).<br>• <strong>Validación de Inclusiones:</strong> Verificación estricta de formatos de personas y hogares (IN_PE, FO_PE, IN_HO, FO_HO, ¿OK?).<br>• <strong>Secciones de Control:</strong> Evaluación por módulos específicos (SEC_A, SEC_B, SEC_C) para garantizar la calidad de la información ingresada."
   ],
   "tituloRangos": "Rangos de Calificación Final",
   "rangos": [
