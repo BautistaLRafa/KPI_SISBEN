@@ -76,6 +76,37 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 .menu-item .text { opacity: 0; transition: opacity 0.2s; }
 .sidebar:hover .menu-item .text { opacity: 1; }
 
+/* SELECTOR DE MESES DENTRO DEL MENÚ LATERAL */
+.menu-dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-weight: 700;
+}
+.menu-dropdown-container .icon { font-size: 20px; min-width: 30px; text-align: center; color: #94a3b8; }
+.menu-dropdown-body { opacity: 0; transition: opacity 0.2s; display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.sidebar:hover .menu-dropdown-body { opacity: 1; }
+.menu-dropdown-label { font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; }
+
+.sidebar-mes-select {
+  background: #1f2937;
+  color: #38bdf8;
+  border: 1px solid #374151;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+}
+.sidebar-mes-select:hover { background: #374151; color: #fff; }
+
 /* CONTENIDO PRINCIPAL */
 .main-content {
   flex: 1;
@@ -117,22 +148,6 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 
 .brand-title-container h2 { color: #38bdf8; font-size: 1.4rem; font-weight: 800; }
 .slogan { font-family: Georgia, serif; font-style: italic; color: #2dd4bf; font-size: 1.1rem; font-weight: bold; }
-
-/* SELECTOR DESPLEGABLE DE MESES */
-.mes-select {
-  background: #1f2937;
-  color: #38bdf8;
-  border: 1px solid #374151;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s;
-  display: none;
-}
-.mes-select:hover { background: #374151; color: #fff; }
 
 .sub-tabs-bar { display: none; gap: 6px; flex-wrap: wrap; }
 .sub-tab-btn {
@@ -270,7 +285,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     overflow-x: auto; 
   }
   
-  .menu-item .text { 
+  .menu-item .text, .menu-dropdown-body { 
     opacity: 1; 
   }
   
@@ -285,7 +300,6 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     gap: 10px;
   }
 
-  /* Cabecera principal en columna */
   .header-bar {
     flex-direction: column;
     align-items: flex-start;
@@ -308,7 +322,6 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     font-size: 0.95rem;
   }
 
-  /* Barras informativas y botones de ciclos en rejilla de 3 columnas */
   .info-bar {
     flex-direction: column;
     align-items: flex-start;
@@ -333,13 +346,11 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     text-overflow: ellipsis;
   }
 
-  /* Tarjetas de métricas inferiores en 2 columnas */
   .cards-grid { 
     grid-template-columns: repeat(2, 1fr); 
     gap: 6px;
   }
 
-  /* Pie de página en columna (uno debajo del otro) */
   .footer-bar {
     flex-direction: column;
     align-items: flex-start;
@@ -349,7 +360,6 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     padding: 12px;
   }
 
-  /* Rejillas y tablas */
   .main-grid { 
     grid-template-columns: 1fr; 
   }
