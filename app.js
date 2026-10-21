@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     construirSidebar();
-    construirDropdownMeses();
     mostrarConsolidadoGeneral();
     
   } catch (err) {
@@ -42,28 +41,36 @@ function construirSidebar() {
   if (!menu) return;
   menu.innerHTML = '';
 
+  // 1. Consolidado General
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
+  // 2. Menú Desplegable de Meses en la barra lateral
+  const dropdownContainer = document.createElement('div');
+  dropdownContainer.className = 'menu-dropdown-container';
+  dropdownContainer.innerHTML = `
+    <span class="icon"><i class="bi bi-stack"></i></span>
+    <div class="menu-dropdown-body">
+      <span class="menu-dropdown-label">Meses</span>
+      <select id="select-mes-dropdown" class="sidebar-mes-select" onchange="seleccionarMesDesdeDropdown(this.value)">
+        <option value="" disabled selected>Seleccione mes</option>
+      </select>
+    </div>
+  `;
+  menu.appendChild(dropdownContainer);
+
+  // Llenar las opciones del selector de meses
+  const select = document.getElementById('select-mes-dropdown');
   if (appData.meses) {
     appData.meses.forEach(mes => {
-      agregarItemMenu(menu, '<i class="bi bi-stack"></i>', mes.nombre, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
+      const opt = document.createElement('option');
+      opt.value = mes.id;
+      opt.innerText = mes.nombre.toUpperCase();
+      select.appendChild(opt);
     });
   }
 
+  // 3. Información & Guía
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
-}
-
-function construirDropdownMeses() {
-  const select = document.getElementById('select-mes-dropdown');
-  if (!select) return;
-  select.innerHTML = '';
-
-  appData.meses.forEach(mes => {
-    const opt = document.createElement('option');
-    opt.value = mes.id;
-    opt.innerText = mes.nombre.toUpperCase();
-    select.appendChild(opt);
-  });
 }
 
 function agregarItemMenu(container, iconoHtml, texto, accion, id) {
@@ -84,11 +91,18 @@ function activarMenu(id) {
 function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
   document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
-  document.getElementById('select-mes-dropdown').style.display = 'none';
+  
+  // Ocultar sub-pestañas de ciclos y barra de fechas/ciclo (ya que es histórico global)
   document.getElementById('sub-tabs-bar').style.display = 'none';
+  document.getElementById('info-bar-container').style.display = 'none';
+
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
+
+  // Desmarcar selección en el desplegable lateral si estuviera activo
+  const dropdown = document.getElementById('select-mes-dropdown');
+  if (dropdown) dropdown.value = "";
 
   let todosLosRendimientos = [];
   let supervisionMap = {};
@@ -138,22 +152,24 @@ function mostrarConsolidadoGeneral() {
 }
 
 function seleccionarMes(mesId) {
-  activarMenu(`menu-mes-${mesId}`);
   const mData = datosMensuales[mesId];
   if (!mData) return;
 
-  document.getElementById('view-title').innerText = "MES:";
+  document.getElementById('view-title').innerText = `MES: ${mData.nombreMes.toUpperCase()}`;
+  
   const dropdown = document.getElementById('select-mes-dropdown');
-  dropdown.style.display = 'inline-block';
-  dropdown.value = mesId;
+  if (dropdown) dropdown.value = mesId;
 
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
-
+  
+  // Mostrar sub-pestañas de ciclos y barra de fechas únicamente en la vista mensual
   const subBar = document.getElementById('sub-tabs-bar');
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
+
+  document.getElementById('info-bar-container').style.display = 'flex';
 
   mData.ciclos.forEach(cInfo => {
     const btn = document.createElement('button');
@@ -176,7 +192,7 @@ function seleccionarMes(mesId) {
 }
 
 function seleccionarMesDesdeDropdown(mesId) {
-  seleccionarMes(mesId);
+  if (mesId) seleccionarMes(mesId);
 }
 
 function mostrarConsolidadoMes(mesId) {
@@ -234,8 +250,11 @@ function mostrarCiclo(mesId, cicloId) {
 function mostrarInformacion() {
   activarMenu('menu-info');
   document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
-  document.getElementById('select-mes-dropdown').style.display = 'none';
+  
+  // Ocultar sub-pestañas de ciclos y barra de fechas en la sección de información
   document.getElementById('sub-tabs-bar').style.display = 'none';
+  document.getElementById('info-bar-container').style.display = 'none';
+  
   document.getElementById('view-dashboard').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'none';
 
@@ -243,8 +262,6 @@ function mostrarInformacion() {
   container.style.display = 'block';
   container.innerHTML = '';
 
-  document.getElementById('ciclo-titulo').innerText = "DOCUMENTACIÓN";
-  document.getElementById('ciclo-fechas').innerText = "METODOLOGÍA DE EVALUACIÓN";
   document.getElementById('footer-liderazgo').innerText = "Sistema de Gestión de Indicadores Sisbén Santa Marta";
 
   if (!infoData) {
@@ -260,6 +277,12 @@ function mostrarInformacion() {
   clone.querySelector('[data-bind="tituloGuia"]').innerText = infoData.tituloGuia;
   clone.querySelector('[data-bind="descripcionGuia"]').innerHTML = infoData.descripcionGuia;
   clone.querySelector('[data-bind="tituloRangos"]').innerText = infoData.tituloRangos;
+
+  // Renderizar la descripción de supervisión detallada del archivo info.json
+  const supBox = clone.querySelector('[data-bind-html="textoSupervision"]');
+  if (supBox && infoData.componentes && infoData.componentes[1]) {
+    supBox.innerHTML = infoData.componentes[1];
+  }
 
   const rangosContainer = clone.querySelector('#info-rangos-container');
   const rangoTemplate = document.getElementById('tpl-rango-card');
