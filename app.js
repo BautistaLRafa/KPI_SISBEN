@@ -42,15 +42,15 @@ function construirSidebar() {
   menu.innerHTML = '';
 
   // 1. Consolidado General
-  agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
+  agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Botón desplegable / acordeón de Meses en el Sidebar (Automatizado)
+  // 2. Botón desplegable flotante de Meses en el Sidebar
   const menuMesesWrapper = document.createElement('div');
   menuMesesWrapper.className = 'menu-dropdown-wrapper';
   menuMesesWrapper.innerHTML = `
     <button class="menu-item" id="menu-btn-meses" onclick="toggleMenuMeses(event)">
       <span class="icon"><i class="bi bi-stack"></i></span>
-      <span class="text">Meses <i class="bi bi-chevron-down" style="font-size: 10px; float: right; margin-left: auto;"></i></span>
+      <span class="text">Meses <i class="bi bi-chevron-down" style="font-size: 10px; margin-left: auto;"></i></span>
     </button>
     <div class="submenu-meses" id="submenu-meses-container"></div>
   `;
@@ -63,7 +63,10 @@ function construirSidebar() {
       subBtn.className = 'submenu-item';
       subBtn.id = `menu-mes-${mes.id}`;
       subBtn.innerText = mes.nombre.toUpperCase();
-      subBtn.onclick = () => {
+      subBtn.onclick = (e) => {
+        e.stopPropagation();
+        submenuContainer.classList.remove('show-floating');
+        submenuContainer.style.display = 'none';
         seleccionarMes(mes.id);
       };
       submenuContainer.appendChild(subBtn);
@@ -71,14 +74,29 @@ function construirSidebar() {
   }
 
   // 3. Información & Guía
-  agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
+  agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Guía', () => mostrarInformacion(), 'menu-info');
+
+  // Cerrar submenú al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (!menuMesesWrapper.contains(e.target)) {
+      submenuContainer.classList.remove('show-floating');
+      submenuContainer.style.display = 'none';
+    }
+  });
 }
 
 function toggleMenuMeses(event) {
   event.stopPropagation();
   const submenu = document.getElementById('submenu-meses-container');
   if (submenu) {
-    submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
+    const isVisible = submenu.style.display === 'flex' || submenu.classList.contains('show-floating');
+    if (isVisible) {
+      submenu.style.display = 'none';
+      submenu.classList.remove('show-floating');
+    } else {
+      submenu.style.display = 'flex';
+      submenu.classList.add('show-floating');
+    }
   }
 }
 
