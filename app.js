@@ -4,12 +4,10 @@ let infoData = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 1. Cargar el índice de ciclos/meses (data/ciclos.json)
     const res = await fetch('data/ciclos.json');
     if (!res.ok) throw new Error("No se pudo cargar data/ciclos.json");
     appData = await res.json();
     
-    // 2. Cargar la información institucional desde data/info.json
     try {
       const infoRes = await fetch('data/info.json');
       if (infoRes.ok) infoData = await infoRes.json();
@@ -17,7 +15,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.warn("No se pudo cargar data/info.json", e); 
     }
 
-    // 3. Cargar cada archivo mensual (ej. data/2026-10.json)
     for (let mInfo of appData.meses) {
       const mRes = await fetch(mInfo.archivo);
       if (mRes.ok) {
@@ -40,24 +37,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-/* --- CONSTRUCCIÓN DE INTERFAZ --- */
-
 function construirSidebar() {
   const menu = document.getElementById('sidebar-menu');
   if (!menu) return;
   menu.innerHTML = '';
 
-  // 1. Inicio / Consolidado General
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Meses disponibles
   if (appData.meses) {
     appData.meses.forEach(mes => {
       agregarItemMenu(menu, '<i class="bi bi-stack"></i>', mes.nombre, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
     });
   }
 
-  // 3. Guía e Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
 }
 
@@ -88,8 +80,6 @@ function activarMenu(id) {
   const target = document.getElementById(id);
   if (target) target.classList.add('active');
 }
-
-/* --- VISTAS --- */
 
 function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
@@ -165,7 +155,6 @@ function seleccionarMes(mesId) {
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
 
-  // 1. Crear botones para cada ciclo individual
   mData.ciclos.forEach(cInfo => {
     const btn = document.createElement('button');
     btn.className = 'sub-tab-btn';
@@ -175,7 +164,6 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
-  // 2. Crear botón para Consolidado Mes al final
   const btnCons = document.createElement('button');
   btnCons.className = 'sub-tab-btn';
   btnCons.id = `sub-btn-consolidado-${mesId}`;
@@ -183,7 +171,6 @@ function seleccionarMes(mesId) {
   btnCons.onclick = () => mostrarConsolidadoMes(mesId);
   subBar.appendChild(btnCons);
 
-  // 3. Mostrar por defecto el último ciclo disponible
   const ultimoCiclo = mData.ciclos[mData.ciclos.length - 1];
   mostrarCiclo(mesId, ultimoCiclo.id);
 }
@@ -254,44 +241,42 @@ function mostrarInformacion() {
 
   const container = document.getElementById('view-info');
   container.style.display = 'block';
+  container.innerHTML = '';
 
   document.getElementById('ciclo-titulo').innerText = "DOCUMENTACIÓN";
   document.getElementById('ciclo-fechas').innerText = "METODOLOGÍA DE EVALUACIÓN";
   document.getElementById('footer-liderazgo').innerText = "Sistema de Gestión de Indicadores Sisbén Santa Marta";
 
   if (!infoData) {
-    container.innerHTML = "<p style='color:#cbd5e1;'>Cargando información metodológica...</p>";
+    container.innerText = "Cargando información metodológica...";
     return;
   }
 
-  let html = `
-    <h3>${infoData.tituloPrincipal}</h3>
-    <p style="margin-bottom: 15px; color: #94a3b8;">${infoData.introduccion}</p>
+  const template = document.getElementById('tpl-info-guide');
+  const clone = template.content.cloneNode(true);
 
-    <h3>${infoData.tituloGuia}</h3>
-    <p>${infoData.descripcionGuia}</p>
-    <ul>
-  `;
+  clone.querySelector('[data-bind="tituloPrincipal"]').innerText = infoData.tituloPrincipal;
+  clone.querySelector('[data-bind="introduccion"]').innerText = infoData.introduccion;
+  clone.querySelector('[data-bind="tituloGuia"]').innerText = infoData.tituloGuia;
+  clone.querySelector('[data-bind="descripcionGuia"]').innerHTML = infoData.descripcionGuia;
+  clone.querySelector('[data-bind="tituloRangos"]').innerText = infoData.tituloRangos;
 
-  infoData.componentes.forEach(comp => {
-    html += `<li>${comp}</li>`;
-  });
-
-  html += `
-    </ul>
-    <h3>${infoData.tituloRangos}</h3>
-    <ul>
-  `;
+  const rangosContainer = clone.querySelector('#info-rangos-container');
+  const rangoTemplate = document.getElementById('tpl-rango-card');
 
   infoData.rangos.forEach(r => {
-    html += `<li><span class="badge" style="background:${r.bg}; color:${r.color};">${r.nombre}</span> : ${r.desc}</li>`;
+    const rangoClone = rangoTemplate.content.cloneNode(true);
+    const badge = rangoClone.querySelector('[data-bind="badge"]');
+    badge.innerText = r.nombre;
+    badge.style.backgroundColor = r.bg;
+    badge.style.color = r.color;
+
+    rangoClone.querySelector('[data-bind="desc"]').innerText = r.desc;
+    rangosContainer.appendChild(rangoClone);
   });
 
-  html += `</ul>`;
-  container.innerHTML = html;
+  container.appendChild(clone);
 }
-
-/* --- CÁLCULOS MATEMÁTICOS Y RENDERIZADO --- */
 
 const parseNum = val => (typeof val === 'number' ? val : (!val || val === '-' ? 0 : parseFloat(String(val).replace(',', '.')) || 0));
 const fmt = val => val.toFixed(2).replace('.', ',');
@@ -304,7 +289,7 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  const baseProcesada = r + rc + v; // Base precisa: Realizadas + Rechazadas + Verificaciones
+  const baseProcesada = r + rc + v;
   const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
@@ -382,7 +367,7 @@ function renderizarDashboard(data) {
     tr.className = `row-${row.final.toLowerCase()}`;
     tr.innerHTML = `
       <td>${row.pos}</td>
-      <td style="text-align: left; font-weight: 600;">${row.encuestador}</td>
+      <td class="text-left font-weight-600">${row.encuestador}</td>
       <td>${row.can}</td><td>${row.pen}</td><td>${row.rea}</td><td>${row.rec}</td><td>${row.ver}</td><td>${row.asig}</td>
       <td>${fmt(row.tg)}</td><td>${fmt(row.ef)}</td><td>${fmt(row.pd)}</td><td>${fmt(row.eg)}</td><td>${fmt(row.sum)}</td><td>${fmt(row.sub_t)}</td><td><b>${fmt(row.total)}</b></td>
       <td><span class="badge badge-${row.final.toLowerCase()}">${row.final}</span></td>
@@ -405,7 +390,7 @@ function renderizarDashboard(data) {
     else if (val >= 50) color = 'sup-rosado';
 
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="text-align: left;">${row.encuestador}</td><td><span class="sup-badge ${color}">${val}</span></td>`;
+    tr.innerHTML = `<td class="text-left">${row.encuestador}</td><td><span class="sup-badge ${color}">${val}</span></td>`;
     tbodySup.appendChild(tr);
   });
 }
