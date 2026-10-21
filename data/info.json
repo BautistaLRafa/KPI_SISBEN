@@ -1,0 +1,19 @@
+{
+  "tituloPrincipal": "Sistema de Gestión de Indicadores - Sisbén Santa Marta",
+  "introduccion": "Este espacio está diseñado para transparentar la metodología de evaluación institucional. El modelo ponderado de desempeño busca medir de manera objetiva, justa y equitativa el esfuerzo operativo, la calidad en campo y la productividad de cada encuestador durante los ciclos de trabajo.",
+  "tituloGuia": "Guía de Clasificación y Ponderación de Desempeño",
+  "descripcionGuia": "El rendimiento institucional se divide en dos grandes bloques que suman el <strong>100% del total final</strong>:",
+  "componentes": [
+    "<strong>1. RENDIMIENTO OPERATIVO (60% del total final):</strong><br> Evalúa el volumen y la eficiencia en campo mediante 4 indicadores:<br>• <strong>TG (20%):</strong> Tasa de gestión (encuestas procesadas frente a las asignadas).<br>• <strong>EF (30%):</strong> Efectividad (encuestas aprobadas frente a las realizadas/intentadas).<br>• <strong>PD (20%):</strong> Productividad (solicitudes gestionadas respecto a la máxima asignación del ciclo).<br>• <strong>EG (30%):</strong> Efectividad global de encuestas realizadas frente al total asignado.<br><em>Nota sobre el Subtotal:</em> Combina el 80% del puntaje base de estos indicadores con un 20% que valora al encuestador con mayor volumen de asignaciones, premiando la capacidad de respuesta ante cargas operativas altas.",
+    "<strong>2. SUPERVISIÓN (40% del total final):</strong><br> Corresponde a la nota de campo asignada luego de la supervisión y revisión estricta de reportes, evidencias y formatos de inclusión."
+  ],
+  "tituloRangos": "Rangos de Calificación Final",
+  "rangos": [
+    { "nombre": "EXCELENTE", "desc": "90 a 100 puntos", "bg": "#172554", "color": "#93c5fd" },
+    { "nombre": "ALTO", "desc": "80 a 89.9 puntos", "bg": "#172554", "color": "#93c5fd" },
+    { "nombre": "BUENO", "desc": "70 a 79.9 puntos", "bg": "#064e3b", "color": "#6ee7b7" },
+    { "nombre": "REGULAR", "desc": "60 a 69.9 puntos", "bg": "#713f12", "color": "#fde047" },
+    { "nombre": "BAJO", "desc": "50 a 59.9 puntos", "bg": "#881337", "color": "#fda4af" },
+    { "nombre": "MALO", "desc": "Menor a 50 puntos", "bg": "#1e293b", "color": "#94a3b8" }
+  ]
+}
