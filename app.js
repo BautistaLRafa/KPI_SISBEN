@@ -3,10 +3,12 @@ let datosMensuales = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await fetch('data/meses.json');
-    if (!res.ok) throw new Error("No se pudo cargar data/meses.json");
+    // 1. Leer el archivo de índice (data/ciclos.json)
+    const res = await fetch('data/ciclos.json');
+    if (!res.ok) throw new Error("No se pudo cargar data/ciclos.json");
     appData = await res.json();
     
+    // 2. Cargar cada archivo de mes (ej. data/2026-10.json)
     for (let mInfo of appData.meses) {
       const mRes = await fetch(mInfo.archivo);
       if (mRes.ok) {
@@ -24,25 +26,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     
   } catch (err) {
     console.error("Error iniciando la aplicación:", err);
-    document.getElementById('ciclo-titulo').innerText = "ERROR AL CARGAR ARCHIVOS JSON";
+    document.getElementById('ciclo-titulo').innerText = "ERROR AL CARGAR DATOS";
   }
 });
 
 function construirSidebar() {
   const menu = document.getElementById('sidebar-menu');
+  if (!menu) return;
   menu.innerHTML = '';
 
-  // 1. Inicio / Consolidado General
+  // Icono 1: Inicio
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Meses
+  // Icono 2: Meses
   if (appData.meses) {
     appData.meses.forEach(mes => {
       agregarItemMenu(menu, '<i class="bi bi-stack"></i>', mes.nombre, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
     });
   }
 
-  // 3. Información y Guía
+  // Icono 3: Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
 }
 
@@ -224,7 +227,7 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  const baseProcesada = r + rc + v;
+  const baseProcesada = r + rc + v; // Base precisa: Realizadas + Rechazadas + Verificaciones
   const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
