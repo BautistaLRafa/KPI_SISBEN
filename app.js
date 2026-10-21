@@ -1,21 +1,21 @@
 let appData = { meses: [] };
-let mesActualId = null;
-let cicloActualId = null;
+let datosMensuales = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await fetch('data/ciclos.json');
+    const res = await fetch('data/meses.json');
+    if (!res.ok) throw new Error("No se pudo cargar data/meses.json");
     appData = await res.json();
     
-    // Cargar todos los datos de los ciclos de cada mes
-    for (let mes of appData.meses) {
-      mes.ciclosData = {};
-      for (let cInfo of mes.ciclos) {
-        const cRes = await fetch(cInfo.archivo);
-        let cData = await cRes.json();
-        cData.rendimiento = calcularMetricas(cData.rendimiento, cData.supervision);
-        cData.totales = calcularTotales(cData.rendimiento);
-        mes.ciclosData[cInfo.id] = cData;
+    for (let mInfo of appData.meses) {
+      const mRes = await fetch(mInfo.archivo);
+      if (mRes.ok) {
+        let mData = await mRes.json();
+        mData.ciclos.forEach(c => {
+          c.rendimiento = calcularMetricas(c.rendimiento, c.supervision);
+          c.totales = calcularTotales(c.rendimiento);
+        });
+        datosMensuales[mInfo.id] = mData;
       }
     }
     
@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     mostrarConsolidadoGeneral();
     
   } catch (err) {
-    console.error("Error al iniciar la aplicación:", err);
+    console.error("Error iniciando la aplicación:", err);
+    document.getElementById('ciclo-titulo').innerText = "ERROR AL CARGAR ARCHIVOS JSON";
   }
 });
 
@@ -31,23 +32,25 @@ function construirSidebar() {
   const menu = document.getElementById('sidebar-menu');
   menu.innerHTML = '';
 
-  // 1. Botón Consolidado General (Página principal)
-  agregarItemMenu(menu, '🏠', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
+  // 1. Inicio / Consolidado General
+  agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado General', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Botones por Mes
-  appData.meses.forEach(mes => {
-    agregarItemMenu(menu, mes.icono || '📅', `Mes: ${mes.nombre}`, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
-  });
+  // 2. Meses
+  if (appData.meses) {
+    appData.meses.forEach(mes => {
+      agregarItemMenu(menu, '<i class="bi bi-stack"></i>', mes.nombre, () => seleccionarMes(mes.id), `menu-mes-${mes.id}`);
+    });
+  }
 
-  // 3. Botón de Información / Guía de Clasificación
-  agregarItemMenu(menu, 'ℹ️', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
+  // 3. Información y Guía
+  agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Información & Guía', () => mostrarInformacion(), 'menu-info');
 }
 
-function agregarItemMenu(container, icono, texto, accion, id) {
+function agregarItemMenu(container, iconoHtml, texto, accion, id) {
   const btn = document.createElement('button');
   btn.className = 'menu-item';
   btn.id = id;
-  btn.innerHTML = `<span class="icon">${icono}</span><span class="text">${texto}</span>`;
+  btn.innerHTML = `<span class="icon">${iconoHtml}</span><span class="text">${texto}</span>`;
   btn.onclick = accion;
   container.appendChild(btn);
 }
@@ -58,10 +61,9 @@ function activarMenu(id) {
   if (target) target.classList.add('active');
 }
 
-// --- VISTA 1: CONSOLIDADO GENERAL DE TODOS LOS MESES ---
 function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
-  document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (TODOS LOS MESES)";
+  document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
@@ -71,12 +73,10 @@ function mostrarConsolidadoGeneral() {
   let supervisionMap = {};
   let totalCiclosCount = 0;
 
-  appData.meses.forEach(mes => {
-    Object.values(mes.ciclosData).forEach(ciclo => {
+  Object.values(datosMensuales).forEach(mesData => {
+    mesData.ciclos.forEach(ciclo => {
       totalCiclosCount++;
-      ciclo.rendimiento.forEach(r => {
-        todosLosRendimientos.push(r);
-      });
+      ciclo.rendimiento.forEach(r => todosLosRendimientos.push(r));
       ciclo.supervision.forEach(s => {
         if (!supervisionMap[s.encuestador]) supervisionMap[s.encuestador] = { suma: 0, count: 0 };
         supervisionMap[s.encuestador].suma += parseNum(s.super);
@@ -85,7 +85,6 @@ function mostrarConsolidadoGeneral() {
     });
   });
 
-  // Consolidar por encuestador sumando sus métricas globales
   let rendMap = {};
   todosLosRendimientos.forEach(r => {
     if (!rendMap[r.encuestador]) {
@@ -110,20 +109,19 @@ function mostrarConsolidadoGeneral() {
 
   renderizarDashboard({
     titulo: "HISTÓRICO GLOBAL",
-    fechas: `ACUMULADO DE ${appData.meses.length} MES(ES) / ${totalCiclosCount} CICLOS`,
+    fechas: `ACUMULADO GLOBAL (${Object.keys(datosMensuales).length} MESES / ${totalCiclosCount} CICLOS)`,
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
     supervision: listaSup
   });
 }
 
-// --- VISTA 2: SELECCIONAR MES Y SUS CICLOS ---
 function seleccionarMes(mesId) {
-  mesActualId = mesId;
   activarMenu(`menu-mes-${mesId}`);
-  const mesObj = appData.meses.find(m => m.id === mesId);
-  
-  document.getElementById('view-title').innerText = `MES: ${mesObj.nombre.toUpperCase()}`;
+  const mData = datosMensuales[mesId];
+  if (!mData) return;
+
+  document.getElementById('view-title').innerText = `MES: ${mData.nombreMes.toUpperCase()}`;
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
@@ -132,7 +130,6 @@ function seleccionarMes(mesId) {
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
 
-  // Botón de Consolidado del Mes
   const btnCons = document.createElement('button');
   btnCons.className = 'sub-tab-btn';
   btnCons.id = `sub-btn-consolidado-${mesId}`;
@@ -140,8 +137,7 @@ function seleccionarMes(mesId) {
   btnCons.onclick = () => mostrarConsolidadoMes(mesId);
   subBar.appendChild(btnCons);
 
-  // Botones por cada ciclo del mes
-  mesObj.ciclos.forEach(cInfo => {
+  mData.ciclos.forEach(cInfo => {
     const btn = document.createElement('button');
     btn.className = 'sub-tab-btn';
     btn.id = `sub-btn-${cInfo.id}`;
@@ -150,18 +146,18 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
-  // Mostrar por defecto el consolidado del mes o el primer ciclo
   mostrarConsolidadoMes(mesId);
 }
 
 function mostrarConsolidadoMes(mesId) {
   document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`sub-btn-consolidado-${mesId}`).classList.add('active');
+  const btnC = document.getElementById(`sub-btn-consolidado-${mesId}`);
+  if (btnC) btnC.classList.add('active');
 
-  const mesObj = appData.meses.find(m => m.id === mesId);
-  let rendMap = {}, supMap = {}, numCiclos = mesObj.ciclos.length;
+  const mData = datosMensuales[mesId];
+  let rendMap = {}, supMap = {}, numCiclos = mData.ciclos.length;
 
-  Object.values(mesObj.ciclosData).forEach(ciclo => {
+  mData.ciclos.forEach(ciclo => {
     ciclo.rendimiento.forEach(r => {
       if (!rendMap[r.encuestador]) rendMap[r.encuestador] = { encuestador: r.encuestador, can: 0, pen: 0, rea: 0, rec: 0, ver: 0, asig: 0 };
       rendMap[r.encuestador].can += r.can;
@@ -185,10 +181,10 @@ function mostrarConsolidadoMes(mesId) {
 
   const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
   const totalesCalc = calcularTotales(rendimientoCalc);
-  totalesCalc.asignadasVar = `Acumulado ${mesObj.nombre} (${numCiclos} ciclos)`;
+  totalesCalc.asignadasVar = `Acumulado ${mData.nombreMes} (${numCiclos} ciclos)`;
 
   renderizarDashboard({
-    titulo: `CONSOLIDADO - ${mesObj.nombre.toUpperCase()}`,
+    titulo: `CONSOLIDADO - ${mData.nombreMes.toUpperCase()}`,
     fechas: `ACUMULADO MENSUAL (${numCiclos} CICLOS)`,
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
@@ -201,11 +197,10 @@ function mostrarCiclo(mesId, cicloId) {
   const btn = document.getElementById(`sub-btn-${cicloId}`);
   if (btn) btn.classList.add('active');
 
-  const mesObj = appData.meses.find(m => m.id === mesId);
-  renderizarDashboard(mesObj.ciclosData[cicloId]);
+  const cData = datosMensuales[mesId].ciclos.find(c => c.id === cicloId);
+  renderizarDashboard(cData);
 }
 
-// --- VISTA 3: INFORMACIÓN / GUÍA ---
 function mostrarInformacion() {
   activarMenu('menu-info');
   document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
@@ -218,7 +213,6 @@ function mostrarInformacion() {
   document.getElementById('footer-liderazgo').innerText = "Sistema de Gestión de Indicadores Sisbén";
 }
 
-// --- FUNCIONES MATEMÁTICAS Y DE RENDERIZADO ---
 const parseNum = val => (typeof val === 'number' ? val : (!val || val === '-' ? 0 : parseFloat(String(val).replace(',', '.')) || 0));
 const fmt = val => val.toFixed(2).replace('.', ',');
 
@@ -230,7 +224,7 @@ function calcularTotales(rendimiento) {
   });
   
   const divAsig = a === 0 ? 1 : a;
-  const baseProcesada = r + rc + v; // Base precisa: Realizadas + Rechazadas + Verificaciones
+  const baseProcesada = r + rc + v;
   const divProcesada = baseProcesada === 0 ? 1 : baseProcesada;
 
   return {
