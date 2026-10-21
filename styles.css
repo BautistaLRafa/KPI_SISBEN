@@ -208,3 +208,21 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   .main-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* Estilo para el selector desplegable de meses en la cabecera */
+.mes-select {
+  background: #1f2937;
+  color: #38bdf8;
+  border: 1px solid #374151;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+.mes-select:hover {
+  background: #374151;
+  color: #fff;
+}
