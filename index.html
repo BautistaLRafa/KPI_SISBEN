@@ -25,17 +25,15 @@
   <main class="main-content">
     <div class="dashboard-card">
       <div class="header-bar">
-        <div class="brand-title" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div class="brand-title-container">
           <h2 id="view-title">CONSOLIDADO GENERAL</h2>
-          <!-- Selector desplegable de meses -->
-          <select id="select-mes-dropdown" class="mes-select" onchange="seleccionarMesDesdeDropdown(this.value)" style="display: none;">
-          </select>
+          <select id="select-mes-dropdown" class="mes-select" onchange="seleccionarMesDesdeDropdown(this.value)"></select>
         </div>
         <div class="slogan">Transformando Santa Marta</div>
       </div>
 
-      <!-- Sub-pestañas de ciclos por mes (ordenadas con consolidado al final) -->
-      <div class="sub-tabs-bar" id="sub-tabs-bar" style="display: none;"></div>
+      <!-- Sub-pestañas de ciclos por mes -->
+      <div class="sub-tabs-bar" id="sub-tabs-bar"></div>
 
       <div class="info-bar">
         <span id="ciclo-titulo">CARGANDO...</span>
@@ -49,7 +47,7 @@
             <thead>
               <tr>
                 <th>POS</th>
-                <th style="text-align: left;">ENCUESTADOR</th>
+                <th class="text-left">ENCUESTADOR</th>
                 <th>CAN</th><th>PEN</th><th>REA</th><th>REC</th><th>VER</th><th>ASIG</th>
                 <th>TG (20%)</th><th>EF (30%)</th><th>PD (20%)</th><th>EG (30%)</th>
                 <th>SUM (100%)</th><th>SUB_T</th><th>TOTAL</th><th>FINAL</th>
@@ -63,15 +61,15 @@
           <table>
             <thead>
               <tr><th colspan="2">SUPERVISIÓN</th></tr>
-              <tr><th style="text-align: left;">ENCUESTADOR</th><th>SUPER</th></tr>
+              <tr><th class="text-left">ENCUESTADOR</th><th>SUPER</th></tr>
             </thead>
             <tbody id="tbody-supervision"></tbody>
           </table>
         </div>
       </div>
 
-     <!-- VISTA DE INFORMACIÓN / CLASIFICACIÓN (Dinámica) -->
-      <div id="view-info" class="info-section" style="display: none;"></div>
+      <!-- VISTA DE INFORMACIÓN / INFOGRAFÍA -->
+      <div id="view-info" class="info-section"></div>
 
       <!-- TARJETAS INFERIORES DE TOTALES -->
       <div class="cards-grid" id="cards-grid">
