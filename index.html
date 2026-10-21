@@ -89,6 +89,81 @@
     </div>
   </main>
 
+  <!-- PLANTILLAS NATIVAS PARA LA INFOGRAFÍA -->
+  <template id="tpl-info-guide">
+    <div class="info-infographic-container">
+      <div class="info-intro-card">
+        <span class="info-intro-title" data-bind="tituloPrincipal"></span>
+        <span data-bind="introduccion"></span>
+      </div>
+
+      <h3 class="info-section-title">
+        <i class="bi bi-diagram-3-fill"></i>
+        <span data-bind="tituloGuia"></span>
+      </h3>
+      <p class="info-section-desc" data-bind="descripcionGuia"></p>
+
+      <div class="info-grid-blocks">
+        <div class="info-block-card">
+          <div class="info-block-header">
+            <i class="bi bi-speedometer2"></i>
+            <span>1. RENDIMIENTO OPERATIVO (60%)</span>
+          </div>
+          <div class="info-item-list">
+            <div class="info-item-row">
+              <div><strong>TG: Tasa de Gestión</strong><br><span class="info-item-subtitle">Encuestas procesadas frente a las asignadas.</span></div>
+              <span class="info-badge-pct">20%</span>
+            </div>
+            <div class="info-item-row">
+              <div><strong>EF: Efectividad</strong><br><span class="info-item-subtitle">Encuestas aprobadas frente a las realizadas.</span></div>
+              <span class="info-badge-pct">30%</span>
+            </div>
+            <div class="info-item-row">
+              <div><strong>PD: Productividad</strong><br><span class="info-item-subtitle">Solicitudes gestionadas respecto a la máxima asignación.</span></div>
+              <span class="info-badge-pct">20%</span>
+            </div>
+            <div class="info-item-row">
+              <div><strong>EG: Efectividad Global</strong><br><span class="info-item-subtitle">Encuestas realizadas frente al total asignado.</span></div>
+              <span class="info-badge-pct">30%</span>
+            </div>
+            <div class="info-note-box">
+              <strong>Nota sobre el Subtotal:</strong> Combina el 80% del puntaje base con un 20% que premia al encuestador con mayor volumen de asignación.
+            </div>
+          </div>
+        </div>
+
+        <div class="info-block-card">
+          <div class="info-block-header">
+            <i class="bi bi-clipboard-check-fill"></i>
+            <span>2. SUPERVISIÓN EN CAMPO (40%)</span>
+          </div>
+          <div class="info-item-list info-item-list-between">
+            <div class="info-supervision-box">
+              Corresponde a la nota de campo asignada tras la <strong>supervisión y revisión estricta de reportes, evidencias y formatos de inclusión</strong>.
+            </div>
+            <div class="info-supervision-badge-container">
+              <div class="info-supervision-val">40%</div>
+              <div class="info-supervision-label">Del Total Final</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="info-section-title">
+        <i class="bi bi-award-fill"></i>
+        <span data-bind="tituloRangos"></span>
+      </h3>
+      <div class="rangos-grid" id="info-rangos-container"></div>
+    </div>
+  </template>
+
+  <template id="tpl-rango-card">
+    <div class="rango-card">
+      <span class="badge rango-badge" data-bind="badge"></span>
+      <span class="rango-desc" data-bind="desc"></span>
+    </div>
+  </template>
+
   <script src="app.js"></script>
 </body>
 </html>
