@@ -381,3 +381,24 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
     padding: 5px 2px;
   }
 }
+
+/* --- ESTILOS DEL LOGO EN LA BARRA LATERAL --- */
+.logo-container {
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo:hover {
+  transform: scale(1.08);
+}
