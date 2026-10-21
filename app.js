@@ -44,7 +44,7 @@ function construirSidebar() {
   // 1. Consolidado General
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Botón desplegable flotante de Meses en el Sidebar
+  // 2. Botón flotante de Meses
   const menuMesesWrapper = document.createElement('div');
   menuMesesWrapper.className = 'menu-dropdown-wrapper';
   menuMesesWrapper.innerHTML = `
@@ -73,10 +73,9 @@ function construirSidebar() {
     });
   }
 
-  // 3. Información & Guía
+  // 3. Guía / Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Guía', () => mostrarInformacion(), 'menu-info');
 
-  // Cerrar submenú al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!menuMesesWrapper.contains(e.target)) {
       submenuContainer.classList.remove('show-floating');
@@ -119,6 +118,7 @@ function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
   document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
   
+  // Ocultar estrictamente las sub-pestañas de ciclos y barra de fechas
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('info-bar-container').style.display = 'none';
 
@@ -184,6 +184,7 @@ function seleccionarMes(mesId) {
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
   
+  // Mostrar sub-pestañas de ciclos exclusivamente al seleccionar un mes
   const subBar = document.getElementById('sub-tabs-bar');
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
@@ -199,10 +200,11 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
+  // Botón de consolidado mensual con el texto "TOTAL"
   const btnCons = document.createElement('button');
   btnCons.className = 'sub-tab-btn';
   btnCons.id = `sub-btn-consolidado-${mesId}`;
-  btnCons.innerText = 'CONSOLIDADO MES';
+  btnCons.innerText = 'TOTAL';
   btnCons.onclick = () => mostrarConsolidadoMes(mesId);
   subBar.appendChild(btnCons);
 
@@ -214,6 +216,10 @@ function mostrarConsolidadoMes(mesId) {
   document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
   const btnC = document.getElementById(`sub-btn-consolidado-${mesId}`);
   if (btnC) btnC.classList.add('active');
+
+  // En el consolidado mensual aseguramos que la barra de ciclos siga visible pero seleccionada en TOTAL
+  document.getElementById('sub-tabs-bar').style.display = 'flex';
+  document.getElementById('info-bar-container').style.display = 'flex';
 
   const mData = datosMensuales[mesId];
   let rendMap = {}, supMap = {}, numCiclos = mData.ciclos.length;
@@ -266,6 +272,7 @@ function mostrarInformacion() {
   activarMenu('menu-info');
   document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
   
+  // Ocultar estrictamente las sub-pestañas de ciclos y barra de fechas en la sección de información
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('info-bar-container').style.display = 'none';
   
