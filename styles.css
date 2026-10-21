@@ -106,7 +106,6 @@ body { background-color: var(--bg-light); color: var(--text-dark); display: flex
 .brand-title h2 { color: #38bdf8; font-size: 1.4rem; font-weight: 800; }
 .slogan { font-family: Georgia, serif; font-style: italic; color: #2dd4bf; font-size: 1.1rem; font-weight: bold; }
 
-/* SUBMENÚ DE CICLOS (DENTRO DE CADA MES) */
 .sub-tabs-bar { display: flex; gap: 6px; flex-wrap: wrap; }
 .sub-tab-btn {
   background: #1f2937;
@@ -195,11 +194,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   gap: 10px;
 }
 
-/* SECCIÓN DE INFORMACIÓN */
-.info-section {
-  line-height: 1.6;
-  color: #cbd5e1;
-}
+.info-section { line-height: 1.6; color: #cbd5e1; }
 .info-section h3 { color: #38bdf8; margin-top: 15px; margin-bottom: 8px; }
 .info-section ul { padding-left: 20px; margin-bottom: 10px; }
 
