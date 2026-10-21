@@ -27,15 +27,14 @@
       <div class="header-bar">
         <div class="brand-title-container">
           <h2 id="view-title">CONSOLIDADO GENERAL</h2>
-          <select id="select-mes-dropdown" class="mes-select" onchange="seleccionarMesDesdeDropdown(this.value)"></select>
         </div>
         <div class="slogan">Transformando Santa Marta</div>
       </div>
 
-      <!-- Sub-pestañas de ciclos por mes -->
+      <!-- Sub-pestañas de ciclos (Solo visibles al seleccionar un mes) -->
       <div class="sub-tabs-bar" id="sub-tabs-bar"></div>
 
-      <div class="info-bar">
+      <div class="info-bar" id="info-bar-container">
         <span id="ciclo-titulo">CARGANDO...</span>
         <span id="ciclo-fechas">--</span>
       </div>
@@ -138,9 +137,7 @@
             <span>2. SUPERVISIÓN EN CAMPO (40%)</span>
           </div>
           <div class="info-item-list info-item-list-between">
-            <div class="info-supervision-box">
-              Corresponde a la nota de campo asignada tras la <strong>supervisión y revisión estricta de reportes, evidencias y formatos de inclusión</strong>.
-            </div>
+            <div class="info-supervision-box" data-bind-html="textoSupervision"></div>
             <div class="info-supervision-badge-container">
               <div class="info-supervision-val">40%</div>
               <div class="info-supervision-label">Del Total Final</div>
