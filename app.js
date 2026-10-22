@@ -41,63 +41,32 @@ function construirSidebar() {
   if (!menu) return;
   menu.innerHTML = '';
 
-  // 1. Consolidado General
+  // 1. Botón Consolidado General
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Menú desplegable flotante de Meses
-  const menuMesesWrapper = document.createElement('div');
-  menuMesesWrapper.className = 'menu-dropdown-wrapper';
-  menuMesesWrapper.innerHTML = `
-    <button class="menu-item" id="menu-btn-meses" type="button" onclick="toggleMenuMeses(event)">
-      <span class="icon"><i class="bi bi-stack"></i></span>
-      <span class="text">Meses <i class="bi bi-chevron-down" style="font-size: 10px; margin-left: auto;"></i></span>
-    </button>
-    <div class="submenu-meses" id="submenu-meses-container"></div>
+  // 2. Selector nativo dinámico de Meses
+  const selectWrapper = document.createElement('div');
+  selectWrapper.className = 'meses-select-wrapper';
+  selectWrapper.innerHTML = `
+    <span class="icon"><i class="bi bi-stack"></i></span>
+    <select id="select-mes-sidebar" class="sidebar-mes-select" onchange="seleccionarMes(this.value)">
+      <option value="" disabled selected>MESES</option>
+    </select>
   `;
-  menu.appendChild(menuMesesWrapper);
+  menu.appendChild(selectWrapper);
 
-  const submenuContainer = document.getElementById('submenu-meses-container');
+  const selectEl = selectWrapper.querySelector('#select-mes-sidebar');
   if (appData.meses) {
     appData.meses.forEach(mes => {
-      const subBtn = document.createElement('button');
-      subBtn.className = 'submenu-item';
-      subBtn.id = `menu-mes-${mes.id}`;
-      subBtn.type = 'button';
-      subBtn.innerText = mes.nombre.toUpperCase();
-      subBtn.onclick = (e) => {
-        e.stopPropagation();
-        submenuContainer.classList.remove('show-floating');
-        submenuContainer.style.display = 'none';
-        seleccionarMes(mes.id);
-      };
-      submenuContainer.appendChild(subBtn);
+      const opt = document.createElement('option');
+      opt.value = mes.id;
+      opt.innerText = mes.nombre.toUpperCase();
+      selectEl.appendChild(opt);
     });
   }
 
-  // 3. Guía / Información
+  // 3. Botón Guía / Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Guía', () => mostrarInformacion(), 'menu-info');
-
-  document.addEventListener('click', (e) => {
-    if (!menuMesesWrapper.contains(e.target)) {
-      submenuContainer.classList.remove('show-floating');
-      submenuContainer.style.display = 'none';
-    }
-  });
-}
-
-function toggleMenuMeses(event) {
-  event.stopPropagation();
-  const submenu = document.getElementById('submenu-meses-container');
-  if (submenu) {
-    const isVisible = submenu.style.display === 'flex' || submenu.classList.contains('show-floating');
-    if (isVisible) {
-      submenu.style.display = 'none';
-      submenu.classList.remove('show-floating');
-    } else {
-      submenu.style.display = 'flex';
-      submenu.classList.add('show-floating');
-    }
-  }
 }
 
 function agregarItemMenu(container, iconoHtml, texto, accion, id) {
@@ -111,7 +80,7 @@ function agregarItemMenu(container, iconoHtml, texto, accion, id) {
 }
 
 function activarMenu(id) {
-  document.querySelectorAll('.menu-item, .submenu-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
   const target = document.getElementById(id);
   if (target) target.classList.add('active');
 }
@@ -120,6 +89,11 @@ function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
   document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
   
+  // Reiniciar valor visual del selector de meses
+  const selMes = document.getElementById('select-mes-sidebar');
+  if (selMes) selMes.value = "";
+
+  // Ocultar sub-pestañas de ciclos y barra de fechas
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('info-bar-container').style.display = 'none';
 
@@ -175,7 +149,11 @@ function mostrarConsolidadoGeneral() {
 }
 
 function seleccionarMes(mesId) {
-  activarMenu(`menu-mes-${mesId}`);
+  if (!mesId) return;
+  
+  // Desmarcar otros botones activos
+  document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+
   const mData = datosMensuales[mesId];
   if (!mData) return;
 
@@ -185,6 +163,7 @@ function seleccionarMes(mesId) {
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
   
+  // Mostrar sub-pestañas de ciclos exclusivamente al seleccionar un mes
   const subBar = document.getElementById('sub-tabs-bar');
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
@@ -200,6 +179,7 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
+  // Botón Consolidado del Mes denominado TOTAL
   const btnCons = document.createElement('button');
   btnCons.className = 'sub-tab-btn';
   btnCons.id = `sub-btn-consolidado-${mesId}`;
@@ -270,6 +250,9 @@ function mostrarInformacion() {
   activarMenu('menu-info');
   document.getElementById('view-title').innerText = "GUÍA Y CLASIFICACIÓN INSTITUCIONAL";
   
+  const selMes = document.getElementById('select-mes-sidebar');
+  if (selMes) selMes.value = "";
+
   document.getElementById('sub-tabs-bar').style.display = 'none';
   document.getElementById('info-bar-container').style.display = 'none';
   
