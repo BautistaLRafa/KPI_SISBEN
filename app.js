@@ -374,7 +374,7 @@ function renderizarDashboard(data) {
     if (elVal) elVal.innerText = val;
     if (elSub) {
       if (key === 'asignadas') elSub.innerText = data.totales.asignadasVar;
-      else if (key === 'rechazadas' || key === 'verificaciones') elSub.innerText = data.totales[key + 'Pct'] + " del procesado";
+      else if (key === 'rechazadas' || key === 'verificaciones') elSub.innerText = data.totales[key + 'Pct'] + " de las realizadas";
       else elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
     }
   });
