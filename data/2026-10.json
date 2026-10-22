@@ -117,6 +117,35 @@
         { "encuestador": "SAYDIS R", "super": 90 },
         { "encuestador": "VERONICA", "super": 99 }
       ]
+    },
+    {
+      "id": "ciclo5",
+      "titulo": "QUINTO CICLO",
+      "fechas": "16 OCT – 19 OCT",
+      "rendimiento": [
+        { "encuestador": "SAYDIS R", "can": 13, "pen": 4, "rea": 17, "rec": 1, "ver": 2, "asig": 37 },
+        { "encuestador": "KATHERINE P", "can": 4, "pen": 12, "rea": 18, "rec": 0, "ver": 0, "asig": 37 },
+        { "encuestador": "ALEX J", "can": 10, "pen": 9, "rea": 14, "rec": 1, "ver": 3, "asig": 37 },
+        { "encuestador": "JOSE ROMERO", "can": 12, "pen": 8, "rea": 14, "rec": 0, "ver": 1, "asig": 36 },
+        { "encuestador": "VERONICA", "can": 14, "pen": 13, "rea": 10, "rec": 0, "ver": 0, "asig": 37 },
+        { "encuestador": "MARTIN", "can": 11, "pen": 3, "rea": 19, "rec": 0, "ver": 2, "asig": 36 },
+        { "encuestador": "LISBETH P", "can": 2, "pen": 11, "rea": 23, "rec": 0, "ver": 0, "asig": 37 },
+        { "encuestador": "DIEGO", "can": 7, "pen": 12, "rea": 15, "rec": 0, "ver": 0, "asig": 36 },
+        { "encuestador": "ISAC", "can": 7, "pen": 11, "rea": 16, "rec": 0, "ver": 1, "asig": 36 },
+        { "encuestador": "LILIANA PIÑA", "can": 5, "pen": 8, "rea": 21, "rec": 0, "ver": 6, "asig": 40 }
+      ],
+      "supervision": [
+        { "encuestador": "ALEX J", "super": 101 },
+        { "encuestador": "DIEGO", "super": 90 },
+        { "encuestador": "ISAC", "super": 90 },
+        { "encuestador": "JOSE ROMERO", "super": 100 },
+        { "encuestador": "KATHERINE P", "super": 101 },
+        { "encuestador": "LILIANA PIÑA", "super": 96 },
+        { "encuestador": "LISBETH P", "super": 97 },
+        { "encuestador": "MARTIN", "super": 101 },
+        { "encuestador": "SAYDIS R", "super": 98 },
+        { "encuestador": "VERONICA", "super": 98 }
+      ]
     }
   ]
 }
