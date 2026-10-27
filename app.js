@@ -28,7 +28,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     construirSidebar();
-    mostrarConsolidadoGeneral();
+    
+    // Abrir por defecto en el último ciclo del último mes disponible
+    if (appData.meses && appData.meses.length > 0) {
+      const ultimoMes = appData.meses[appData.meses.length - 1];
+      const selectSidebar = document.getElementById('select-mes-sidebar');
+      if (selectSidebar) {
+        selectSidebar.value = ultimoMes.id;
+      }
+      seleccionarMes(ultimoMes.id); // Carga el mes y automáticamente selecciona su último ciclo
+    } else {
+      mostrarConsolidadoGeneral();
+    }
     
   } catch (err) {
     console.error("Error iniciando la aplicación:", err);
