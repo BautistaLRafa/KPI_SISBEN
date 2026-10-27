@@ -166,17 +166,17 @@
         { "encuestador": "YENNIS", "can": 7, "pen": 7, "rea": 21, "rec": 0, "ver": 2, "asig": 37 }
       ],
       "supervision": [
-        { "encuestador": "ALEX J", "super": 101 },
-        { "encuestador": "DIEGO", "super": 90 },
-        { "encuestador": "ISAC", "super": 90 },
-        { "encuestador": "JOSE ROMERO", "super": 100 },
-        { "encuestador": "KATHERINE P", "super": 101 },
-        { "encuestador": "LILIANA PIÑA", "super": 96 },
-        { "encuestador": "LISBETH P", "super": 97 },
+        { "encuestador": "ALEX J", "super": 67 },
+        { "encuestador": "DIEGO", "super": 72 },
+        { "encuestador": "ISAC", "super": 95 },
+        { "encuestador": "JOSE ROMERO", "super": 89 },
+        { "encuestador": "KATHERINE P", "super": 94 },
+        { "encuestador": "LILIANA PIÑA", "super": 93 },
+        { "encuestador": "LISBETH P", "super": 100 },
         { "encuestador": "MARIA JOSE", "super": 84 },
-        { "encuestador": "MARTIN", "super": 101 },
-        { "encuestador": "SAYDIS R", "super": 98 },
-        { "encuestador": "VERONICA", "super": 98 },
+        { "encuestador": "MARTIN", "super": 99 },
+        { "encuestador": "SAYDIS R", "super": 100 },
+        { "encuestador": "VERONICA", "super": 82 },
         { "encuestador": "YENNIS", "super": 100 }
       ]
     }
