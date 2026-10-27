@@ -132,7 +132,8 @@ function mostrarConsolidadoGeneral() {
 
   const listaSup = Object.keys(supervisionMap).map(nombre => ({
     encuestador: nombre,
-    super: Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count)
+    super: Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count),
+    count: supervisionMap[nombre].count // Guardamos el conteo de ciclos activos para usarlo en la métrica
   })).sort((a, b) => b.super - a.super);
 
   // Activamos el indicador de que es un consolidado/histórico global (isGlobal = true)
@@ -220,7 +221,8 @@ function mostrarConsolidadoMes(mesId) {
 
   const listaSup = Object.keys(supMap).map(nombre => ({
     encuestador: nombre,
-    super: Math.round(supMap[nombre].suma / supMap[nombre].count)
+    super: Math.round(supMap[nombre].suma / supMap[nombre].count),
+    count: supMap[nombre].count
   })).sort((a, b) => b.super - a.super);
 
   const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, true);
@@ -333,7 +335,14 @@ function calcularTotales(rendimiento) {
 
 function calcularMetricas(rendimiento, supervision, isGlobal = false) {
   const supMap = {};
-  if (supervision) supervision.forEach(s => { supMap[s.encuestador] = parseNum(s.super); });
+  const supCountMap = {};
+  
+  if (supervision) {
+    supervision.forEach(s => { 
+      supMap[s.encuestador] = parseNum(s.super); 
+      supCountMap[s.encuestador] = s.count || 1;
+    });
+  }
 
   const maxAsig = Math.max(...rendimiento.map(r => parseNum(r.asig)), 1);
 
@@ -347,19 +356,27 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
     const efDenom = (rea + rec + ver) === 0 ? 1 : (rea + rec + ver);
     const ef = (rea / efDenom) * 30;
 
-    // Ajuste inteligente para PD en vistas globales/acumuladas: 
-    // Evita penalizar exageradamente al personal nuevo que ingresó tarde, 
-    // dándoles una base justa sin restarle mérito al esfuerzo de volumen de los veteranos.
+    // Ajuste equilibrado para PD (Productividad) en vistas globales
     let pd = (rea / maxAsig) * 20;
     if (isGlobal && asig < 50) { 
-      pd = Math.min(pd * 1.8, 15); // Suaviza el impacto de la PD baja para ingresos tardíos en acumulados
+      pd = Math.min(pd * 1.8, 15); 
     }
 
     const eg = (rea / asigDiv) * 30;
     const suma = tg + ef + pd + eg;
     const sub_t = (suma * 0.8) + ((asig / maxAsig) * 20);
 
-    const superVal = supMap[row.encuestador] || 0;
+    let superVal = supMap[row.encuestador] || 0;
+    const ciclosActivosSup = supCountMap[row.encuestador] || 1;
+
+    // AJUSTE EQUILIBRADO PARA SUPERVISIÓN EN VISTAS GLOBALES:
+    // Si es global y la persona tiene muy pocos ciclos de supervisión registrados (ej. ingresó tarde),
+    // aplicamos un factor de ponderación y un techo prudente (ej: 88 u 90 max) para que 
+    // una nota perfecta de 100 en un solo ciclo no descompense la constancia histórica de los veteranos.
+    if (isGlobal && asig < 50) {
+      superVal = Math.min(superVal * 0.92, 88); // Atenúa ligeramente y pone un techo justo
+    }
+
     const total = (sub_t * 0.6) + (superVal * 0.4);
 
     let final = "MALO";
