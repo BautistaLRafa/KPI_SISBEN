@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (mRes.ok) {
         let mData = await mRes.json();
         mData.ciclos.forEach(c => {
-          c.rendimiento = calcularMetricas(c.rendimiento, c.supervision);
+          c.rendimiento = calcularMetricas(c.rendimiento, c.supervision, false);
           c.totales = calcularTotales(c.rendimiento);
         });
         datosMensuales[mInfo.id] = mData;
@@ -41,10 +41,10 @@ function construirSidebar() {
   if (!menu) return;
   menu.innerHTML = '';
 
-  // 1. Botón Consolidado General
+  // 1. Consolidado General
   agregarItemMenu(menu, '<i class="bi bi-grid-1x2-fill"></i>', 'Consolidado', () => mostrarConsolidadoGeneral(), 'menu-consolidado');
 
-  // 2. Selector nativo dinámico de Meses
+  // 2. Selector nativo de Meses
   const selectWrapper = document.createElement('div');
   selectWrapper.className = 'meses-select-wrapper';
   selectWrapper.innerHTML = `
@@ -65,7 +65,7 @@ function construirSidebar() {
     });
   }
 
-  // 3. Botón Guía / Información
+  // 3. Guía / Información
   agregarItemMenu(menu, '<i class="bi bi-info-square"></i>', 'Guía', () => mostrarInformacion(), 'menu-info');
 }
 
@@ -89,13 +89,13 @@ function mostrarConsolidadoGeneral() {
   activarMenu('menu-consolidado');
   document.getElementById('view-title').innerText = "CONSOLIDADO GENERAL (HISTÓRICO)";
   
-  // Reiniciar valor visual del selector de meses
   const selMes = document.getElementById('select-mes-sidebar');
   if (selMes) selMes.value = "";
 
-  // Ocultar sub-pestañas de ciclos y barra de fechas
-  document.getElementById('sub-tabs-bar').style.display = 'none';
-  document.getElementById('info-bar-container').style.display = 'none';
+  const subBar = document.getElementById('sub-tabs-bar');
+  const infoBar = document.getElementById('info-bar-container');
+  if (subBar) subBar.style.setProperty('display', 'none', 'important');
+  if (infoBar) infoBar.style.setProperty('display', 'none', 'important');
 
   document.getElementById('view-dashboard').style.display = 'grid';
   document.getElementById('view-info').style.display = 'none';
@@ -135,7 +135,8 @@ function mostrarConsolidadoGeneral() {
     super: Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count)
   })).sort((a, b) => b.super - a.super);
 
-  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
+  // Activamos el indicador de que es un consolidado/histórico global (isGlobal = true)
+  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, true);
   const totalesCalc = calcularTotales(rendimientoCalc);
   totalesCalc.asignadasVar = `Acumulado global (${totalCiclosCount} ciclos)`;
 
@@ -150,8 +151,6 @@ function mostrarConsolidadoGeneral() {
 
 function seleccionarMes(mesId) {
   if (!mesId) return;
-  
-  // Desmarcar otros botones activos
   document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
 
   const mData = datosMensuales[mesId];
@@ -163,7 +162,6 @@ function seleccionarMes(mesId) {
   document.getElementById('view-info').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'grid';
   
-  // Mostrar sub-pestañas de ciclos exclusivamente al seleccionar un mes
   const subBar = document.getElementById('sub-tabs-bar');
   subBar.style.display = 'flex';
   subBar.innerHTML = '';
@@ -179,7 +177,6 @@ function seleccionarMes(mesId) {
     subBar.appendChild(btn);
   });
 
-  // Botón Consolidado del Mes denominado TOTAL
   const btnCons = document.createElement('button');
   btnCons.className = 'sub-tab-btn';
   btnCons.id = `sub-btn-consolidado-${mesId}`;
@@ -196,8 +193,10 @@ function mostrarConsolidadoMes(mesId) {
   const btnC = document.getElementById(`sub-btn-consolidado-${mesId}`);
   if (btnC) btnC.classList.add('active');
 
-  document.getElementById('sub-tabs-bar').style.display = 'flex';
-  document.getElementById('info-bar-container').style.display = 'flex';
+  const subBar = document.getElementById('sub-tabs-bar');
+  const infoBar = document.getElementById('info-bar-container');
+  if (subBar) subBar.style.display = 'flex';
+  if (infoBar) infoBar.style.display = 'flex';
 
   const mData = datosMensuales[mesId];
   let rendMap = {}, supMap = {}, numCiclos = mData.ciclos.length;
@@ -224,7 +223,7 @@ function mostrarConsolidadoMes(mesId) {
     super: Math.round(supMap[nombre].suma / supMap[nombre].count)
   })).sort((a, b) => b.super - a.super);
 
-  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup);
+  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, true);
   const totalesCalc = calcularTotales(rendimientoCalc);
   totalesCalc.asignadasVar = `Acumulado ${mData.nombreMes} (${numCiclos} ciclos)`;
 
@@ -242,6 +241,11 @@ function mostrarCiclo(mesId, cicloId) {
   const btn = document.getElementById(`sub-btn-${cicloId}`);
   if (btn) btn.classList.add('active');
 
+  const subBar = document.getElementById('sub-tabs-bar');
+  const infoBar = document.getElementById('info-bar-container');
+  if (subBar) subBar.style.display = 'flex';
+  if (infoBar) infoBar.style.display = 'flex';
+
   const cData = datosMensuales[mesId].ciclos.find(c => c.id === cicloId);
   renderizarDashboard(cData);
 }
@@ -253,8 +257,10 @@ function mostrarInformacion() {
   const selMes = document.getElementById('select-mes-sidebar');
   if (selMes) selMes.value = "";
 
-  document.getElementById('sub-tabs-bar').style.display = 'none';
-  document.getElementById('info-bar-container').style.display = 'none';
+  const subBar = document.getElementById('sub-tabs-bar');
+  const infoBar = document.getElementById('info-bar-container');
+  if (subBar) subBar.style.setProperty('display', 'none', 'important');
+  if (infoBar) infoBar.style.setProperty('display', 'none', 'important');
   
   document.getElementById('view-dashboard').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'none';
@@ -325,7 +331,7 @@ function calcularTotales(rendimiento) {
   };
 }
 
-function calcularMetricas(rendimiento, supervision) {
+function calcularMetricas(rendimiento, supervision, isGlobal = false) {
   const supMap = {};
   if (supervision) supervision.forEach(s => { supMap[s.encuestador] = parseNum(s.super); });
 
@@ -341,7 +347,14 @@ function calcularMetricas(rendimiento, supervision) {
     const efDenom = (rea + rec + ver) === 0 ? 1 : (rea + rec + ver);
     const ef = (rea / efDenom) * 30;
 
-    const pd = (rea / maxAsig) * 20;
+    // Ajuste inteligente para PD en vistas globales/acumuladas: 
+    // Evita penalizar exageradamente al personal nuevo que ingresó tarde, 
+    // dándoles una base justa sin restarle mérito al esfuerzo de volumen de los veteranos.
+    let pd = (rea / maxAsig) * 20;
+    if (isGlobal && asig < 50) { 
+      pd = Math.min(pd * 1.8, 15); // Suaviza el impacto de la PD baja para ingresos tardíos en acumulados
+    }
+
     const eg = (rea / asigDiv) * 30;
     const suma = tg + ef + pd + eg;
     const sub_t = (suma * 0.8) + ((asig / maxAsig) * 20);
@@ -374,7 +387,7 @@ function renderizarDashboard(data) {
     if (elVal) elVal.innerText = val;
     if (elSub) {
       if (key === 'asignadas') elSub.innerText = data.totales.asignadasVar;
-      else if (key === 'rechazadas' || key === 'verificaciones') elSub.innerText = data.totales[key + 'Pct'] + " de las realizadas";
+      else if (key === 'rechazadas' || key === 'verificaciones') elSub.innerText = data.totales[key + 'Pct'] + " del procesado";
       else elSub.innerText = data.totales[key + 'Pct'] + " de las asignadas";
     }
   });
