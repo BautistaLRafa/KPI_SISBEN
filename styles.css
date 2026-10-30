@@ -344,7 +344,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
 }
 
 /* ==========================================
-   ESTILOS DEL PODIO - TOP 3 (CICLO 8 COMPLETO)
+   ESTILOS DEL PODIO - TOP 3 (ESCALONADO Y LENTO)
    ========================================== */
 
 .podium-container {
@@ -355,12 +355,18 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   margin: 25px auto 35px auto;
   width: 100%;
   max-width: 800px;
-  animation: fadeInPodium 0.5s ease-in-out;
 }
 
-@keyframes fadeInPodium {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Animación base más lenta y fluida (0.8s) */
+@keyframes fadeInUpSlow {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
 .podium-card {
@@ -374,6 +380,10 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  /* Aplicamos la animación lenta a todas por defecto */
+  opacity: 0;
+  animation: fadeInUpSlow 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .podium-card:hover {
@@ -381,27 +391,32 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
-/* 1. Puesto 1: Centro (Oro - más alto) */
+/* EFECTO ESCALONADO (Secuencia: 3ro -> 2do -> 1ro) */
+
+/* 3. Puesto 3 (Derecha) - Entra de primero */
+.podium-card.rank-3 {
+  order: 3;
+  border-color: rgba(220, 38, 38, 0.5);
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.12) 0%, #131b2e 70%);
+  animation-delay: 0.1s; /* Aparece casi de inmediato */
+}
+
+/* 2. Puesto 2 (Izquierda) - Entra de segundo */
+.podium-card.rank-2 {
+  order: 1;
+  border-color: rgba(96, 165, 250, 0.4);
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, #131b2e 70%);
+  animation-delay: 0.4s; /* Espera un momento */
+}
+
+/* 1. Puesto 1 (Centro - Oro) - Entra al final para cerrar con broche de oro */
 .podium-card.rank-1 {
   order: 2;
   padding-top: 35px;
   border-color: rgba(245, 158, 11, 0.5);
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #131b2e 70%);
   box-shadow: 0 12px 35px rgba(245, 158, 11, 0.15);
-}
-
-/* 2. Puesto 2: Izquierda (Plata / Azul) */
-.podium-card.rank-2 {
-  order: 1;
-  border-color: rgba(96, 165, 250, 0.4);
-  background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, #131b2e 70%);
-}
-
-/* 3. Puesto 3: Derecha (Rojo Institucional) */
-.podium-card.rank-3 {
-  order: 3;
-  border-color: rgba(220, 38, 38, 0.5);
-  background: linear-gradient(180deg, rgba(220, 38, 38, 0.12) 0%, #131b2e 70%);
+  animation-delay: 0.7s; /* Cierra la secuencia con el primer lugar */
 }
 
 /* Insignias flotantes de posición (1, 2, 3) */
