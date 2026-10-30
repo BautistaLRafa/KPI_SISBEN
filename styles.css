@@ -405,7 +405,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
 .podium-card.rank-2 {
   order: 1;
   border-color: rgba(96, 165, 250, 0.4);
-  background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, #131b2e 70%);
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.12) 0%, #131b2e 70%);
   animation-delay: 1.0s; /* Espera un momento */
 }
 
