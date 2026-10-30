@@ -398,7 +398,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   order: 3;
   border-color: rgba(220, 38, 38, 0.5);
   background: linear-gradient(180deg, rgba(220, 38, 38, 0.12) 0%, #131b2e 70%);
-  animation-delay: 0.1s; /* Aparece casi de inmediato */
+  animation-delay: 0.5s; /* Aparece casi de inmediato */
 }
 
 /* 2. Puesto 2 (Izquierda) - Entra de segundo */
@@ -406,7 +406,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   order: 1;
   border-color: rgba(96, 165, 250, 0.4);
   background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, #131b2e 70%);
-  animation-delay: 0.4s; /* Espera un momento */
+  animation-delay: 0.7s; /* Espera un momento */
 }
 
 /* 1. Puesto 1 (Centro - Oro) - Entra al final para cerrar con broche de oro */
@@ -416,7 +416,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   border-color: rgba(245, 158, 11, 0.5);
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #131b2e 70%);
   box-shadow: 0 12px 35px rgba(245, 158, 11, 0.15);
-  animation-delay: 0.7s; /* Cierra la secuencia con el primer lugar */
+  animation-delay: 1.2s; /* Cierra la secuencia con el primer lugar */
 }
 
 /* Insignias flotantes de posición (1, 2, 3) */
