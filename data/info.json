@@ -4,9 +4,29 @@
   "tituloGuia": "Guía de Clasificación y Ponderación de Desempeño",
   "descripcionGuia": "El rendimiento institucional se divide en dos grandes bloques que suman el <strong>100% del total final</strong>:",
   "componentes": [
-    "<strong>1. RENDIMIENTO OPERATIVO (60% del total final):</strong><br> Evalúa el volumen y la eficiencia en campo mediante 4 indicadores:<br>• <strong>TG (20%):</strong> Tasa de gestión (encuestas procesadas frente a las asignadas).<br>• <strong>EF (30%):</strong> Efectividad (encuestas aprobadas frente a las realizadas/intentadas).<br>• <strong>PD (20%):</strong> Productividad (solicitudes gestionadas respecto a la máxima asignación del ciclo).<br>• <strong>EG (30%):</strong> Efectividad global de encuestas realizadas frente al total asignado.<br><em>Nota sobre el Subtotal:</em> Combina el 80% del puntaje base de estos indicadores con un 20% que valora al encuestador con mayor volumen de asignaciones, premiando la capacidad de respuesta ante cargas operativas altas.",
-    "<strong>2. SUPERVISIÓN EN CAMPO (40% del total final):</strong><br> Corresponde al promedio del cumplimiento total obtenido en la auditoría de campo, evaluando la calidad y veracidad del dato mediante la siguiente lógica de cálculo:<br>• <strong>Control Documental:</strong> Revisión de planillas de campo y evidencias (PL, EV).<br>• <strong>Validación Condicional de Inclusiones:</strong> Verificación estricta de formatos (IN_PE, FO_PE, IN_HO, FO_HO, ¿OK?) aplicando ponderaciones dinámicas (80%/20% o 90%/10%) según el estado de las casillas de verificación.<br>• <strong>Secciones de Control:</strong> Evaluación por módulos específicos (SEC_A, SEC_B, SEC_C) para garantizar la calidad de la información ingresada.<br>• <strong>Tope Máximo:</strong> El cálculo acumulado cuenta con un límite técnico de control de hasta <strong>150 puntos máximos</strong> antes de aplicar el factor ponderado del 40%."
+    "<strong>1. RENDIMIENTO OPERATIVO (60% del total final):</strong><br> Evalúa el volumen y la eficiencia en campo mediante 4 indicadores:<br>• <strong>TG (20%):</strong> Tasa de gestión (encuestas procesadas frente a las asignadas).<br>• <strong>EF (30%):</strong> Efectividad (encuestas aprobadas frente a las realizadas/intentadas).<br>• <strong>PD (20%):</strong> Productividad (solicitudes gestionadas respecto a la máxima asignación del ciclo).<br>• <strong>EG (30%):</strong> Efectividad global de encuestas realizadas frente al total asignado.<br><em>Nota sobre el Subtotal:</em> Combina el 80% del puntaje base de estos indicadores con un 20% que valora al encuestador con mayor volumen de asignaciones, premiando la capacidad de respuesta ante cargas operativas altas."
   ],
+  "supervisionItems": [
+    {
+      "sigla": "SEC_A",
+      "nombre": "Control Documental",
+      "desc": "Revisión y validación de planillas de campo y evidencias (PL, EV).",
+      "pct": "Variable"
+    },
+    {
+      "sigla": "SEC_B",
+      "nombre": "Inclusión de Personas",
+      "desc": "Verificación estricta de formatos de personas (IN_PE, FO_PE, ¿OK?).",
+      "pct": "Variable"
+    },
+    {
+      "sigla": "SEC_C",
+      "nombre": "Inclusión de Hogar",
+      "desc": "Evaluación de módulos específicos para hogares (IN_HO, FO_HO).",
+      "pct": "Variable"
+    }
+  ],
+  "supervisionNota": "<strong>Suma y Ponderación Final:</strong> El puntaje acumulado de estas secciones (con un tope máximo de control de 150 puntos) se pondera para aportar el <strong>40% definitivo</strong> a la calificación global del encuestador.",
   "tituloRangos": "Rangos de Calificación Final",
   "rangos": [
     { "nombre": "EXCELENTE", "desc": "90 a 100 puntos", "bg": "#172554", "color": "#93c5fd" },
