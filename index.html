@@ -98,7 +98,7 @@
         <span data-bind="introduccion"></span>
       </div>
 
-      <!-- 1. RANGOS DE CALIFICACIÓN FINAL (REUBICADOS ARRIBA) -->
+      <!-- 1. RANGOS DE CALIFICACIÓN FINAL (UBICADOS ARRIBA) -->
       <h3 class="info-section-title">
         <i class="bi bi-award-fill"></i>
         <span data-bind="tituloRangos"></span>
@@ -113,6 +113,7 @@
       <p class="info-section-desc" data-bind="descripcionGuia"></p>
 
       <div class="info-grid-blocks">
+        <!-- BLOQUE 1: RENDIMIENTO OPERATIVO -->
         <div class="info-block-card">
           <div class="info-block-header">
             <i class="bi bi-speedometer2"></i>
@@ -141,16 +142,27 @@
           </div>
         </div>
 
+        <!-- BLOQUE 2: SUPERVISIÓN EN CAMPO -->
         <div class="info-block-card">
           <div class="info-block-header">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>2. SUPERVISIÓN EN CAMPO (40%)</span>
           </div>
-          <div class="info-item-list info-item-list-between">
-            <div class="info-supervision-box" data-bind-html="textoSupervision"></div>
-            <div class="info-supervision-badge-container">
-              <div class="info-supervision-val">40%</div>
-              <div class="info-supervision-label">Del Total Final</div>
+          <div class="info-item-list">
+            <div class="info-item-row">
+              <div><strong>SEC_A: Control Documental</strong><br><span class="info-item-subtitle">Revisión y validación de planillas de campo y evidencias (PL, EV).</span></div>
+              <span class="info-badge-pct">Auditoría</span>
+            </div>
+            <div class="info-item-row">
+              <div><strong>SEC_B: Inclusión de Personas</strong><br><span class="info-item-subtitle">Verificación estricta de formatos y casillas de personas (IN_PE, FO_PE, ¿OK?).</span></div>
+              <span class="info-badge-pct">Ponderado</span>
+            </div>
+            <div class="info-item-row">
+              <div><strong>SEC_C: Inclusión de Hogar</strong><br><span class="info-item-subtitle">Evaluación por módulos específicos para hogares (IN_HO, FO_HO).</span></div>
+              <span class="info-badge-pct">Ponderado</span>
+            </div>
+            <div class="info-note-box">
+              <strong>Suma y Ponderación Final:</strong> El puntaje acumulado de estas secciones (con un tope técnico de 150 puntos) se integra para aportar el <strong>40% definitivo</strong> de la calificación final.
             </div>
           </div>
         </div>
