@@ -381,25 +381,27 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
-/* Jerarquía de alturas y colores del podio */
+/* 1. Puesto 1: Centro (Oro - más alto) */
 .podium-card.rank-1 {
-  order: 2; /* Centro (Oro - más alto) */
+  order: 2;
   padding-top: 35px;
   border-color: rgba(245, 158, 11, 0.5);
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #131b2e 70%);
   box-shadow: 0 12px 35px rgba(245, 158, 11, 0.15);
 }
 
+/* 2. Puesto 2: Izquierda (Plata / Azul) */
 .podium-card.rank-2 {
-  order: 1; /* Izquierda (Plata) */
+  order: 1;
   border-color: rgba(96, 165, 250, 0.4);
   background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, #131b2e 70%);
 }
 
+/* 3. Puesto 3: Derecha (Rojo Institucional) */
 .podium-card.rank-3 {
-  order: 3; /* Derecha (Bronce) */
-  border-color: rgba(244, 114, 182, 0.4);
-  background: linear-gradient(180deg, rgba(244, 114, 182, 0.08) 0%, #131b2e 70%);
+  order: 3;
+  border-color: rgba(220, 38, 38, 0.5);
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.12) 0%, #131b2e 70%);
 }
 
 /* Insignias flotantes de posición (1, 2, 3) */
@@ -422,7 +424,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
 
 .rank-1 .podium-badge { background: #f59e0b; border: 2px solid #fde68a; }
 .rank-2 .podium-badge { background: #3b82f6; border: 2px solid #bfdbfe; }
-.rank-3 .podium-badge { background: #ec4899; border: 2px solid #fbcfe8; }
+.rank-3 .podium-badge { background: #dc2626; border: 2px solid #fca5a5; }
 
 /* Contenedor y diseño del avatar / foto del encuestador */
 .podium-avatar-wrapper {
@@ -446,7 +448,7 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
 }
 
 .rank-3 .podium-avatar-wrapper {
-  background: linear-gradient(135deg, #ec4899, #f472b6);
+  background: linear-gradient(135deg, #dc2626, #ef4444);
 }
 
 .podium-avatar-img {
@@ -491,4 +493,4 @@ tr.row-malo { background-color: var(--color-malo); color: var(--text-malo); }
 
 .rank-1 .podium-score { color: #f59e0b; font-size: 24px; }
 .rank-2 .podium-score { color: #60a5fa; }
-.rank-3 .podium-score { color: #f472b6; }
+.rank-3 .podium-score { color: #ef4444; }
