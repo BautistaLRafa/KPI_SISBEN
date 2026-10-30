@@ -407,13 +407,12 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
 function generarPodioSiAplica(mData, rendimientoCalc) {
   let podiumContainer = document.getElementById('podium-section');
   
-  // Ubicación correcta: Justo después del contenedor de tarjetas/info-bar y antes de la tabla del dashboard
+  // Ubicación correcta: Justo después de la barra de información y antes de la tabla del dashboard
   if (!podiumContainer) {
     podiumContainer = document.createElement('div');
     podiumContainer.id = 'podium-section';
     podiumContainer.className = 'podium-container';
     
-    // Lo insertamos justo antes de #view-dashboard para que quede arriba
     const viewDashboard = document.getElementById('view-dashboard');
     if (viewDashboard && viewDashboard.parentNode) {
       viewDashboard.parentNode.insertBefore(podiumContainer, viewDashboard);
@@ -434,11 +433,17 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
   const top2 = rendimientoCalc[1];
   const top3 = rendimientoCalc[2];
 
+ // Función inteligente que busca la foto en image/ y usa iniciales como respaldo si no existe
   const obtenerAvatarHtml = (nombre) => {
+    const nombreArchivo = nombre.toLowerCase().trim().replace(/\s+/g, '_');
+    const rutaFoto = `image/${nombreArchivo}.jpg`; // O .png según el formato de tus archivos
     const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2);
+
     return `
       <div class="podium-avatar-wrapper">
-        <div class="podium-avatar-fallback">${iniciales}</div>
+        <img src="${rutaFoto}" class="podium-avatar-img" alt="${nombre}" 
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="podium-avatar-fallback" style="display:none;">${iniciales}</div>
       </div>
     `;
   };
