@@ -214,41 +214,6 @@
         { "encuestador": "YENNIS", "super": 101 },
         { "encuestador": "ZUREYA", "super": 93 }
       ]
-    },
-     {
-      "id": "ciclo8",
-      "titulo": "OCTAVO CICLO",
-      "fechas": "29 OCT – 03 NOV",
-      "rendimiento": [
-        { "encuestador": "SAYDIS R", "can": 8, "pen": 0, "rea": 14, "rec": 1, "ver": 1, "asig": 24 },
-        { "encuestador": "KATHERINE P", "can": 5, "pen": 1, "rea": 14, "rec": 0, "ver": 2, "asig": 22 },
-        { "encuestador": "ALEX J", "can": 2, "pen": 3, "rea": 12, "rec": 0, "ver": 2, "asig": 19 },
-        { "encuestador": "JOSE ROMERO", "can": 9, "pen": 3, "rea": 11, "rec": 2, "ver": 0, "asig": 25 },
-        { "encuestador": "VERONICA", "can": 4, "pen": 6, "rea": 10, "rec": 2, "ver": 1, "asig": 23 },
-        { "encuestador": "MARTIN", "can": 13, "pen": 0, "rea": 11, "rec": 0, "ver": 1, "asig": 25 },
-        { "encuestador": "LISBETH P", "can": 4, "pen": 3, "rea": 14, "rec": 1, "ver": 2, "asig": 24 },
-        { "encuestador": "DIEGO", "can": 8, "pen": 6, "rea": 11, "rec": 0, "ver": 0, "asig": 25 },
-        { "encuestador": "ISAC", "can": 9, "pen": 3, "rea": 10, "rec": 0, "ver": 2, "asig": 24 },
-        { "encuestador": "LILIANA PIÑA", "can": 3, "pen": 5, "rea": 14, "rec": 1, "ver": 1, "asig": 24 },
-        { "encuestador": "MARIA JOSE", "can": 5, "pen": 8, "rea": 9, "rec": 3, "ver": 0, "asig": 25 },
-        { "encuestador": "YENNIS", "can": 11, "pen": 2, "rea": 13, "rec": 0, "ver": 0, "asig": 26 },
-        { "encuestador": "ZUREYA", "can": 7, "pen": 4, "rea": 13, "rec": 0, "ver": 0, "asig": 24 }
-      ],
-      "supervision": [
-        { "encuestador": "ALEX J", "super": 104 },
-        { "encuestador": "DIEGO", "super": 98 },
-        { "encuestador": "ISAC", "super": 92 },
-        { "encuestador": "JOSE ROMERO", "super": 96 },
-        { "encuestador": "KATHERINE P", "super": 101 },
-        { "encuestador": "LILIANA PIÑA", "super": 96 },
-        { "encuestador": "LISBETH P", "super": 98 },
-        { "encuestador": "MARIA JOSE", "super": 98 },
-        { "encuestador": "MARTIN", "super": 101 },
-        { "encuestador": "SAYDIS R", "super": 102 },
-        { "encuestador": "VERONICA", "super": 100 },
-        { "encuestador": "YENNIS", "super": 101 },
-        { "encuestador": "ZUREYA", "super": 93 }
-      ]
     }
   ]
 }
