@@ -29,14 +29,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     construirSidebar();
     
-    // Abrir por defecto en el último ciclo del último mes disponible
+    // Arranque inteligente: Abre por defecto en el último ciclo del mes más reciente
     if (appData.meses && appData.meses.length > 0) {
       const ultimoMes = appData.meses[appData.meses.length - 1];
       const selectSidebar = document.getElementById('select-mes-sidebar');
       if (selectSidebar) {
         selectSidebar.value = ultimoMes.id;
       }
-      seleccionarMes(ultimoMes.id); // Carga el mes y automáticamente selecciona su último ciclo
+      seleccionarMes(ultimoMes.id);
     } else {
       mostrarConsolidadoGeneral();
     }
@@ -144,10 +144,9 @@ function mostrarConsolidadoGeneral() {
   const listaSup = Object.keys(supervisionMap).map(nombre => ({
     encuestador: nombre,
     super: Math.round(supervisionMap[nombre].suma / supervisionMap[nombre].count),
-    count: supervisionMap[nombre].count // Guardamos el conteo de ciclos activos para usarlo en la métrica
+    count: supervisionMap[nombre].count
   })).sort((a, b) => b.super - a.super);
 
-  // Activamos el indicador de que es un consolidado/histórico global (isGlobal = true)
   const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, true);
   const totalesCalc = calcularTotales(rendimientoCalc);
   totalesCalc.asignadasVar = `Acumulado global (${totalCiclosCount} ciclos)`;
@@ -158,7 +157,7 @@ function mostrarConsolidadoGeneral() {
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
     supervision: listaSup
-  });
+  }, null); // El histórico global no activa podio de 8 ciclos
 }
 
 function seleccionarMes(mesId) {
@@ -246,7 +245,7 @@ function mostrarConsolidadoMes(mesId) {
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
     supervision: listaSup
-  });
+  }, mData); // Pasamos mData para que valide si ya completó los 8 ciclos y active el podio
 }
 
 function mostrarCiclo(mesId, cicloId) {
@@ -260,7 +259,7 @@ function mostrarCiclo(mesId, cicloId) {
   if (infoBar) infoBar.style.display = 'flex';
 
   const cData = datosMensuales[mesId].ciclos.find(c => c.id === cicloId);
-  renderizarDashboard(cData);
+  renderizarDashboard(cData, null); // Ciclos individuales nunca muestran podio de 8 ciclos
 }
 
 function mostrarInformacion() {
@@ -277,6 +276,10 @@ function mostrarInformacion() {
   
   document.getElementById('view-dashboard').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'none';
+
+  // Ocultar sección de podio si estuviera visible
+  const podiumContainer = document.getElementById('podium-section');
+  if (podiumContainer) podiumContainer.style.display = 'none';
 
   const container = document.getElementById('view-info');
   container.style.display = 'block';
@@ -378,14 +381,10 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
     const sub_t = (suma * 0.8) + ((asig / maxAsig) * 20);
 
     let superVal = supMap[row.encuestador] || 0;
-    const ciclosActivosSup = supCountMap[row.encuestador] || 1;
 
-    // AJUSTE EQUILIBRADO PARA SUPERVISIÓN EN VISTAS GLOBALES:
-    // Si es global y la persona tiene muy pocos ciclos de supervisión registrados (ej. ingresó tarde),
-    // aplicamos un factor de ponderación y un techo prudente (ej: 88 u 90 max) para que 
-    // una nota perfecta de 100 en un solo ciclo no descompense la constancia histórica de los veteranos.
+    // Ajuste equilibrado para Supervisión en vistas globales
     if (isGlobal && asig < 50) {
-      superVal = Math.min(superVal * 0.92, 88); // Atenúa ligeramente y pone un techo justo
+      superVal = Math.min(superVal * 0.92, 88); 
     }
 
     const total = (sub_t * 0.6) + (superVal * 0.4);
@@ -405,9 +404,83 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
   return calculados;
 }
 
-function renderizarDashboard(data) {
+function generarPodioSiAplica(mData, rendimientoCalc) {
+  let podiumContainer = document.getElementById('podium-section');
+  
+  // Si el contenedor del podio aún no existe en el HTML, lo creamos dinámicamente antes de la tabla
+  if (!podiumContainer) {
+    const cardsGrid = document.getElementById('cards-grid');
+    if (cardsGrid) {
+      podiumContainer = document.createElement('div');
+      podiumContainer.id = 'podium-section';
+      podiumContainer.className = 'podium-container';
+      cardsGrid.parentNode.insertBefore(podiumContainer, cardsGrid);
+    }
+  }
+
+  if (!podiumContainer) return;
+
+  // REGLA ESTRICTA: El podio solo aparece si el mes tiene EXACTAMENTE los 8 ciclos completos
+  const tieneOchoCiclos = mData && mData.ciclos && mData.ciclos.length === 8;
+
+  if (!tieneOchoCiclos || !rendimientoCalc || rendimientoCalc.length < 3) {
+    podiumContainer.style.display = 'none';
+    return;
+  }
+
+  const top1 = rendimientoCalc[0];
+  const top2 = rendimientoCalc[1];
+  const top3 = rendimientoCalc[2];
+
+  const obtenerAvatarHtml = (nombre) => {
+    // Si deseas agregar fotos físicas en el futuro, puedes validar la ruta aquí. 
+    // Por defecto genera un avatar limpio con las iniciales del encuestador:
+    const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2);
+    return `
+      <div class="podium-avatar-wrapper">
+        <div class="podium-avatar-fallback">${iniciales}</div>
+      </div>
+    `;
+  };
+
+  podiumContainer.innerHTML = `
+    <!-- PUESTO 2 (PLATA - IZQUIERDA) -->
+    <div class="podium-card rank-2">
+      <div class="podium-badge">2</div>
+      ${obtenerAvatarHtml(top2.encuestador)}
+      <div class="podium-name">${top2.encuestador}</div>
+      <div class="podium-score">${fmt(top2.total)} pts</div>
+      <span class="badge badge-${top2.final.toLowerCase()}">${top2.final}</span>
+    </div>
+
+    <!-- PUESTO 1 (ORO - CENTRO ELEVADO) -->
+    <div class="podium-card rank-1">
+      <div class="podium-badge">1</div>
+      ${obtenerAvatarHtml(top1.encuestador)}
+      <div class="podium-name">${top1.encuestador}</div>
+      <div class="podium-score">${fmt(top1.total)} pts</div>
+      <span class="badge badge-${top1.final.toLowerCase()}">${top1.final}</span>
+    </div>
+
+    <!-- PUESTO 3 (BRONCE - DERECHA) -->
+    <div class="podium-card rank-3">
+      <div class="podium-badge">3</div>
+      ${obtenerAvatarHtml(top3.encuestador)}
+      <div class="podium-name">${top3.encuestador}</div>
+      <div class="podium-score">${fmt(top3.total)} pts</div>
+      <span class="badge badge-${top3.final.toLowerCase()}">${top3.final}</span>
+    </div>
+  `;
+
+  podiumContainer.style.display = 'flex';
+}
+
+function renderizarDashboard(data, mDataObj = null) {
   document.getElementById('ciclo-titulo').innerText = data.titulo;
   document.getElementById('ciclo-fechas').innerText = data.fechas;
+
+  // Validar y activar podio solo si se completaron los 8 ciclos
+  generarPodioSiAplica(mDataObj, data.rendimiento);
 
   Object.entries(data.totales).forEach(([key, val]) => {
     const elVal = document.getElementById(`tot-${key}`);
