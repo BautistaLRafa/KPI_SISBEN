@@ -407,14 +407,16 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
 function generarPodioSiAplica(mData, rendimientoCalc) {
   let podiumContainer = document.getElementById('podium-section');
   
-  // Si el contenedor del podio aún no existe en el HTML, lo creamos dinámicamente antes de la tabla
+  // Ubicación correcta: Justo después del contenedor de tarjetas/info-bar y antes de la tabla del dashboard
   if (!podiumContainer) {
-    const cardsGrid = document.getElementById('cards-grid');
-    if (cardsGrid) {
-      podiumContainer = document.createElement('div');
-      podiumContainer.id = 'podium-section';
-      podiumContainer.className = 'podium-container';
-      cardsGrid.parentNode.insertBefore(podiumContainer, cardsGrid);
+    podiumContainer = document.createElement('div');
+    podiumContainer.id = 'podium-section';
+    podiumContainer.className = 'podium-container';
+    
+    // Lo insertamos justo antes de #view-dashboard para que quede arriba
+    const viewDashboard = document.getElementById('view-dashboard');
+    if (viewDashboard && viewDashboard.parentNode) {
+      viewDashboard.parentNode.insertBefore(podiumContainer, viewDashboard);
     }
   }
 
@@ -433,8 +435,6 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
   const top3 = rendimientoCalc[2];
 
   const obtenerAvatarHtml = (nombre) => {
-    // Si deseas agregar fotos físicas en el futuro, puedes validar la ruta aquí. 
-    // Por defecto genera un avatar limpio con las iniciales del encuestador:
     const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2);
     return `
       <div class="podium-avatar-wrapper">
