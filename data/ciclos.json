@@ -5,6 +5,12 @@
       "nombre": "Octubre 2026",
       "icono": "bi bi-stack",
       "archivo": "data/2026-10.json"
+    },
+    {
+      "id": "2026-11",
+      "nombre": "Noviembre 2026",
+      "icono": "bi bi-stack",
+      "archivo": "data/2026-11.json"
     }
   ]
 }
