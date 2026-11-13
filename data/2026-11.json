@@ -57,7 +57,7 @@
         { "encuestador": "ZUREYA", "can": 9, "pen": 7, "rea": 19, "rec": 0, "ver": 0, "asig": 35 }
       ],
       "supervision": [
-       { "encuestador": "ALEX J", "super": 106 },
+        { "encuestador": "ALEX J", "super": 106 },
         { "encuestador": "DIEGO", "super": 108 },
         { "encuestador": "ISAC", "super": 92 },
         { "encuestador": "JOSE ROMERO", "super": 99 },
