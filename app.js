@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const infoRes = await fetch('data/info.json');
       if (infoRes.ok) infoData = await infoRes.json();
-    } catch(e) { 
+    } catch(e) {  
       console.warn("No se pudo cargar data/info.json", e); 
     }
 
@@ -157,7 +157,7 @@ function mostrarConsolidadoGeneral() {
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
     supervision: listaSup
-  }, null); // El histórico global no activa podio de 8 ciclos
+  }, null);
 }
 
 function seleccionarMes(mesId) {
@@ -235,7 +235,8 @@ function mostrarConsolidadoMes(mesId) {
     count: supMap[nombre].count
   })).sort((a, b) => b.super - a.super);
 
-  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, true);
+  // CAMBIO CLAVE: Pasamos 'false' para que el consolidado mensual sume de forma directa sin alterar métricas base
+  const rendimientoCalc = calcularMetricas(Object.values(rendMap), listaSup, false);
   const totalesCalc = calcularTotales(rendimientoCalc);
   totalesCalc.asignadasVar = `Acumulado ${mData.nombreMes} (${numCiclos} ciclos)`;
 
@@ -245,7 +246,7 @@ function mostrarConsolidadoMes(mesId) {
     totales: totalesCalc,
     rendimiento: rendimientoCalc,
     supervision: listaSup
-  }, mData); // Pasamos mData para que valide si ya completó los 8 ciclos y active el podio
+  }, mData);
 }
 
 function mostrarCiclo(mesId, cicloId) {
@@ -259,7 +260,7 @@ function mostrarCiclo(mesId, cicloId) {
   if (infoBar) infoBar.style.display = 'flex';
 
   const cData = datosMensuales[mesId].ciclos.find(c => c.id === cicloId);
-  renderizarDashboard(cData, null); // Ciclos individuales nunca muestran podio de 8 ciclos
+  renderizarDashboard(cData, null);
 }
 
 function mostrarInformacion() {
@@ -277,7 +278,6 @@ function mostrarInformacion() {
   document.getElementById('view-dashboard').style.display = 'none';
   document.getElementById('cards-grid').style.display = 'none';
 
-  // Ocultar sección de podio si estuviera visible
   const podiumContainer = document.getElementById('podium-section');
   if (podiumContainer) podiumContainer.style.display = 'none';
 
@@ -370,10 +370,9 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
     const efDenom = (rea + rec + ver) === 0 ? 1 : (rea + rec + ver);
     const ef = (rea / efDenom) * 30;
 
-    // Ajuste equilibrado para PD (Productividad) en vistas globales
     let pd = (rea / maxAsig) * 20;
-    if (isGlobal && asig < 50) { 
-      pd = Math.min(pd * 1.8, 15); 
+    if (isGlobal && asig < 50) {  
+      pd = Math.min(pd * 1.8, 15);   
     }
 
     const eg = (rea / asigDiv) * 30;
@@ -382,9 +381,8 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
 
     let superVal = supMap[row.encuestador] || 0;
 
-    // Ajuste equilibrado para Supervisión en vistas globales
     if (isGlobal && asig < 50) {
-      superVal = Math.min(superVal * 0.92, 88); 
+      superVal = Math.min(superVal * 0.92, 88);   
     }
 
     const total = (sub_t * 0.6) + (superVal * 0.4);
@@ -407,7 +405,6 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
 function generarPodioSiAplica(mData, rendimientoCalc) {
   let podiumContainer = document.getElementById('podium-section');
   
-  // Ubicación correcta: Justo después de la barra de información y antes de la tabla del dashboard
   if (!podiumContainer) {
     podiumContainer = document.createElement('div');
     podiumContainer.id = 'podium-section';
@@ -421,7 +418,6 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
 
   if (!podiumContainer) return;
 
-  // REGLA ESTRICTA: El podio solo aparece si el mes tiene EXACTAMENTE los 8 ciclos completos
   const tieneOchoCiclos = mData && mData.ciclos && mData.ciclos.length === 8;
 
   if (!tieneOchoCiclos || !rendimientoCalc || rendimientoCalc.length < 3) {
@@ -433,10 +429,9 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
   const top2 = rendimientoCalc[1];
   const top3 = rendimientoCalc[2];
 
- // Función inteligente que busca la foto en image/ y usa iniciales como respaldo si no existe
   const obtenerAvatarHtml = (nombre) => {
     const nombreArchivo = nombre.toLowerCase().trim().replace(/\s+/g, '_');
-    const rutaFoto = `image/${nombreArchivo}.jpg`; // O .png según el formato de tus archivos
+    const rutaFoto = `image/${nombreArchivo}.jpg`;
     const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2);
 
     return `
@@ -449,7 +444,6 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
   };
 
   podiumContainer.innerHTML = `
-    <!-- PUESTO 2 (PLATA - IZQUIERDA) -->
     <div class="podium-card rank-2">
       <div class="podium-badge">2</div>
       ${obtenerAvatarHtml(top2.encuestador)}
@@ -458,7 +452,6 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
       <span class="badge badge-${top2.final.toLowerCase()}">${top2.final}</span>
     </div>
 
-    <!-- PUESTO 1 (ORO - CENTRO ELEVADO) -->
     <div class="podium-card rank-1">
       <div class="podium-badge">1</div>
       ${obtenerAvatarHtml(top1.encuestador)}
@@ -467,7 +460,6 @@ function generarPodioSiAplica(mData, rendimientoCalc) {
       <span class="badge badge-${top1.final.toLowerCase()}">${top1.final}</span>
     </div>
 
-    <!-- PUESTO 3 (BRONCE - DERECHA) -->
     <div class="podium-card rank-3">
       <div class="podium-badge">3</div>
       ${obtenerAvatarHtml(top3.encuestador)}
@@ -484,7 +476,6 @@ function renderizarDashboard(data, mDataObj = null) {
   document.getElementById('ciclo-titulo').innerText = data.titulo;
   document.getElementById('ciclo-fechas').innerText = data.fechas;
 
-  // Validar y activar podio solo si se completaron los 8 ciclos
   generarPodioSiAplica(mDataObj, data.rendimiento);
 
   Object.entries(data.totales).forEach(([key, val]) => {
