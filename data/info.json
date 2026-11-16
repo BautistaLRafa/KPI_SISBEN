@@ -29,8 +29,8 @@
   "supervisionNota": "<strong>Suma y Ponderación Final:</strong> El puntaje acumulado de estas secciones (con un tope máximo de control de 150 puntos) se pondera para aportar el <strong>40% definitivo</strong> a la calificación global del encuestador.",
   "tituloRangos": "Rangos de Calificación Final",
   "rangos": [
-    { "nombre": "EXCELENTE", "desc": "90 a 100 puntos", "bg": "#0284c7", "color": "#ffffff" },
-    { "nombre": "ALTO", "desc": "80 a 89.9 puntos", "bg": "#172554", "color": "#93c5fd" },
+    { "nombre": "EXCELENTE", "desc": "95 a 100 puntos", "bg": "#0284c7", "color": "#ffffff" },
+    { "nombre": "ALTO", "desc": "80 a 94.9 puntos", "bg": "#172554", "color": "#93c5fd" },
     { "nombre": "BUENO", "desc": "70 a 79.9 puntos", "bg": "#064e3b", "color": "#6ee7b7" },
     { "nombre": "REGULAR", "desc": "60 a 69.9 puntos", "bg": "#713f12", "color": "#fde047" },
     { "nombre": "BAJO", "desc": "50 a 59.9 puntos", "bg": "#881337", "color": "#fda4af" },
