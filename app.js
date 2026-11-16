@@ -388,7 +388,7 @@ function calcularMetricas(rendimiento, supervision, isGlobal = false) {
     const total = (sub_t * 0.6) + (superVal * 0.4);
 
     let final = "MALO";
-    if (total >= 90) final = "EXCELENTE";
+    if (total >= 95) final = "EXCELENTE";
     else if (total >= 80) final = "ALTO";
     else if (total >= 70) final = "BUENO";
     else if (total >= 60) final = "REGULAR";
